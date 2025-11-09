@@ -1,17 +1,37 @@
 package cr.ac.una.portalwebpokeapi.dto;
 
 /**
- * DTO utilizado para crear una orden a partir del carrito (flujo: Recibe pedido del cliente).
- * No incluye campos internos como id, userId, status ni fechas (el backend los gestiona).
+ * DTO (Data Transfer Object) utilizado durante el proceso de checkout.
+ *
+ * Representa los datos enviados por el cliente al confirmar una orden a partir del carrito.
+ *
+ * Este objeto solo transporta información básica de contacto y dirección.
+ * Los campos relacionados con control interno (id, userId, estado, fechas, totales, etc.)
+ * son gestionados internamente por el backend durante la creación de la orden.
  */
 public class CheckoutRequest {
+    /** Nombre completo del cliente que realiza la orden. */
     private String customerName;
+
+    /** Correo electrónico de contacto. */
     private String customerEmail;
+
+    /** Número telefónico del cliente. */
     private String customerPhone;
+
+    /** Línea 1 de la dirección (por ejemplo: calle, número, edificio). */
     private String addressLine1;
+
+    /** Línea 2 de la dirección (complementaria, opcional). */
     private String addressLine2;
+
+    /** País donde se entrega el pedido. */
     private String country;
+
+    /** Región, provincia o estado dentro del país. */
     private String region;
+
+    // ----- Getters y Setters -----
 
     public String getCustomerName() { return customerName; }
     public void setCustomerName(String customerName) { this.customerName = customerName; }

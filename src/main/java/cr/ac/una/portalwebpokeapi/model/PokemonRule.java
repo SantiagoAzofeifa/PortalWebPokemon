@@ -4,26 +4,41 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entidad que define las reglas asociadas a un Pokémon específico.
+ *
+ * Cada Pokémon puede tener restricciones o configuraciones personalizadas,
+ * tales como país de origen, países donde está disponible o prohibido,
+ * y notas adicionales. Se usa para modular políticas comerciales o de catálogo.
+ */
 @Getter
 @Setter
-@Entity @Table(name="pokemon_rules")
+@Entity
+@Table(name = "pokemon_rules")
 public class PokemonRule {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    /** Identificador único del registro de reglas. */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable=false, unique=true)
-    private Long pokemonId; // id numérico de PokeAPI
+    /** ID numérico del Pokémon según la PokeAPI (único por especie). */
+    @Column(nullable = false, unique = true)
+    private Long pokemonId;
 
-    @Column(length=120)
+    /** País de origen principal del Pokémon. */
+    @Column(length = 120)
     private String originCountry;
 
-    @Column(length=255)
+    /** Lista de países donde el Pokémon está disponible (formato CSV). */
+    @Column(length = 255)
     private String availableCountriesCsv;
 
-    @Column(length=255)
+    /** Lista de países donde el Pokémon está restringido o prohibido (formato CSV). */
+    @Column(length = 255)
     private String bannedCountriesCsv;
 
-    @Column(length=500)
+    /** Notas o comentarios adicionales sobre las reglas aplicadas. */
+    @Column(length = 500)
     private String notes;
-
 }

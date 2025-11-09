@@ -4,26 +4,41 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Entidad que representa un ítem dentro del carrito de compras.
+ *
+ * Cada CartItem corresponde a un producto específico agregado por el usuario,
+ * identificado por su categoría y productId. El precio unitario se almacena
+ * en el momento de la inserción para evitar inconsistencias si el catálogo cambia.
+ */
 @Getter
 @Setter
-@Entity @Table(name="cart_items")
+@Entity
+@Table(name = "cart_items")
 public class CartItem {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    /** Identificador único del ítem dentro del carrito. */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable=false)
+    /** ID del carrito al que pertenece este ítem (relación 1:N con Cart). */
+    @Column(nullable = false)
     private Long cartId;
 
-    @Column(nullable=false)
-    private Long productId; // id numérico (pokemon/item/version)
+    /** ID del producto asociado (ej. Pokémon, ítem o versión de juego). */
+    @Column(nullable = false)
+    private Long productId;
 
-    @Column(nullable=false, length=20)
-    private String productCategory = "POKEMON"; // POKEMON | ITEM | GAME
+    /** Categoría del producto: POKEMON | ITEM | GAME. */
+    @Column(nullable = false, length = 20)
+    private String productCategory = "POKEMON";
 
-    @Column(nullable=false)
+    /** Cantidad del producto seleccionada por el usuario. */
+    @Column(nullable = false)
     private int quantity;
 
-    @Column(nullable=false)
+    /** Precio unitario del producto al momento de agregarse al carrito. */
+    @Column(nullable = false)
     private double unitPrice;
-
 }

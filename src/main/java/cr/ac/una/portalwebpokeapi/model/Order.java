@@ -5,41 +5,62 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+
+/**
+ * Entidad que representa una orden o pedido generado por un usuario.
+ *
+ * Contiene los datos básicos de identificación del pedido, cliente, dirección
+ * y estado. Las relaciones con otras entidades (Delivery, Payment, etc.)
+ * se gestionan desde el flujo de negocio correspondiente.
+ */
 @Getter
 @Setter
-@Entity @Table(name="orders")
+@Entity
+@Table(name = "orders")
 public class Order {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    /** Identificador único de la orden. */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable=false)
+    /** ID del usuario que realizó la compra. */
+    @Column(nullable = false)
     private Long userId;
 
-    @Column(nullable=false)
+    /** Fecha y hora en que se creó la orden (UTC). */
+    @Column(nullable = false)
     private Instant createdAt = Instant.now();
 
-    @Column(length=120)
+    /** Nombre del cliente asociado a la orden. */
+    @Column(length = 120)
     private String customerName;
 
-    @Column(length=120)
+    /** Correo electrónico del cliente. */
+    @Column(length = 120)
     private String customerEmail;
 
-    @Column(length=40)
+    /** Número telefónico del cliente. */
+    @Column(length = 40)
     private String customerPhone;
 
-    @Column(length=200)
+    /** Primera línea de dirección (calle, número, etc.). */
+    @Column(length = 200)
     private String addressLine1;
 
-    @Column(length=200)
+    /** Segunda línea de dirección (complemento opcional). */
+    @Column(length = 200)
     private String addressLine2;
 
-    @Column(length=120)
+    /** País de destino de la entrega. */
+    @Column(length = 120)
     private String country;
 
-    @Column(length=120)
+    /** Región, provincia o estado dentro del país. */
+    @Column(length = 120)
     private String region;
 
-    @Column(length=30, nullable=false)
+    /** Estado actual de la orden (ej. CREATED, PAID, SHIPPED, DELIVERED). */
+    @Column(length = 30, nullable = false)
     private String status = "CREATED";
-
 }

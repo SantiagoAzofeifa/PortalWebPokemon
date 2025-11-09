@@ -5,6 +5,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface SessionConfigRepository extends JpaRepository<SessionConfigEntity,Long> {
+/**
+ * Repositorio JPA para la entidad {@link SessionConfigEntity}.
+ *
+ * Permite acceder y administrar la configuración de tiempo de sesión persistida
+ * en la base de datos. Generalmente existe un solo registro activo que define
+ * el tiempo de expiración de las sesiones en segundos.
+ */
+public interface SessionConfigRepository extends JpaRepository<SessionConfigEntity, Long> {
+
+    /**
+     * Obtiene el primer registro de configuración de sesión disponible,
+     * ordenado por su identificador.
+     *
+     * @return un {@link Optional} con la configuración actual, si existe.
+     */
     Optional<SessionConfigEntity> findTopByOrderByIdAsc();
 }

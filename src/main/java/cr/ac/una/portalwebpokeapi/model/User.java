@@ -6,28 +6,41 @@ import lombok.Setter;
 
 import java.time.Instant;
 
+/**
+ * Entidad que representa a un usuario dentro del sistema.
+ *
+ * Contiene credenciales, rol, estado y fecha de creación.
+ * El campo passwordHash almacena la contraseña en formato cifrado (BCrypt).
+ */
 @Getter
 @Setter
-@Entity @Table(name="users")
+@Entity
+@Table(name = "users")
 public class User {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    /** Identificador único del usuario. */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable=false, unique=true, length=80)
+    /** Nombre de usuario único utilizado para autenticación. */
+    @Column(nullable = false, unique = true, length = 80)
     private String username;
 
-    @Column(nullable=false, length=120)
+    /** Hash de la contraseña (cifrado con BCrypt). */
+    @Column(nullable = false, length = 120)
     private String passwordHash;
 
+    /** Rol asignado al usuario: ADMIN o USER. */
     @Enumerated(EnumType.STRING)
-    @Column(nullable=false, length=20)
+    @Column(nullable = false, length = 20)
     private UserRole role = UserRole.USER;
 
-    @Column(nullable=false)
+    /** Estado de la cuenta (true = activa, false = deshabilitada). */
+    @Column(nullable = false)
     private boolean active = true;
 
-    @Column(nullable=false)
+    /** Fecha y hora de creación del usuario (UTC). */
+    @Column(nullable = false)
     private Instant createdAt = Instant.now();
-
-
 }
