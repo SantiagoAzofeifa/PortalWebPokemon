@@ -17,9 +17,10 @@
         <a href="catalog.html">Catálogo</a>
         <a href="Cart.html">Carrito</a>
         <a href="countries.html">Países</a>
-        <a href="order-detail.html?orderId=1" data-dynamic="true">Detalle Pedido</a>
         <a href="order-list.html">Mis Pedidos</a>
         <a href="admin.html" data-requires-role="ADMIN">Admin</a>
+        <span id="sessionCountdown" class="badge accent hidden" aria-live="polite">—</span>
+        <button id="renewBtn" class="btn outline hidden" type="button">Renovar</button>
         <a href="login.html" id="loginLink">Login</a>
         <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
     </nav>
@@ -28,7 +29,7 @@
     <section class="hero">
         <h2>Bienvenido</h2>
         <p>Portal de venta con categorías: Comics, Figuras, Eventos, Series. Integración con PokeAPI y RestCountries. Flujo de venta multi-etapa.</p>
-        <p class="status-line">Sesión: <span id="userInfo">No autenticado</span> | <span id="sessionCountdown">—</span></p>
+        <p class="status-line">Sesión: <span id="userInfo">No autenticado</span></p>
         <div class="flex-row">
             <a class="btn primary" href="catalog.html">Explorar productos</a>
             <a class="btn" href="Cart.html">Ir al carrito</a>
@@ -39,7 +40,7 @@
         <h3>Características del Proyecto</h3>
         <ul style="margin:0 0 .6rem 1.1rem;font-size:.85rem;">
             <li>Sesión en caché con timeout configurable</li>
-            <li>CRUD de productos y usuarios (ADMIN)</li>
+            <li>Renovación manual con botón</li>
             <li>Carrito persistente por usuario</li>
             <li>Pedidos y etapas: almacén, empaque, entrega, pago</li>
             <li>Patrón P-S para indisponibilidades</li>

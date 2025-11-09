@@ -6,17 +6,16 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="theme-light">
+<body class="light">
 <header class="app-header">
     <div class="logo-bar">
-        <h1>Autenticación</h1>
+        <h1>Acceso</h1>
         <button id="themeToggle" class="btn small">🌓</button>
     </div>
     <nav class="main-nav">
         <a href="index.html">Inicio</a>
         <a href="catalog.html">Catálogo</a>
         <a href="Cart.html">Carrito</a>
-        <a href="countries.html">Países</a>
         <a href="admin.html" data-requires-role="ADMIN">Admin</a>
     </nav>
 </header>
@@ -51,8 +50,10 @@
             </label>
             <button class="btn primary" type="submit">Ingresar</button>
         </form>
-        <button id="renewBtn" class="btn outline hidden" style="margin-top:.6rem;">Renovar Sesión</button>
-        <pre id="authOutput" class="code-block" style="margin-top:.7rem;" aria-live="polite"></pre>
+        <div class="flex-row" style="margin-top:.6rem;">
+            <button id="renewBtn" class="btn outline hidden">Renovar Sesión</button>
+        </div>
+        <pre id="authOutput" class="code-block" style="margin-top:.9rem;" aria-live="polite"></pre>
     </section>
 </main>
 <footer class="footer">&copy; 2025 Portal PokeVentas</footer>

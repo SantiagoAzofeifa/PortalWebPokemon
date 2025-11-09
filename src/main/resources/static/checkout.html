@@ -17,6 +17,10 @@
         <a href="catalog.html">Catálogo</a>
         <a href="Cart.html">Carrito</a>
         <a href="order-list.html">Mis Pedidos</a>
+        <span id="sessionCountdown" class="badge accent hidden" aria-live="polite">—</span>
+        <button id="renewBtn" class="btn outline hidden" type="button">Renovar</button>
+        <a href="login.html" id="loginLink">Login</a>
+        <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
     </nav>
 </header>
 <main class="content narrow">
@@ -59,19 +63,14 @@
     initTheme();
     hydrateSessionUI();
 
-    // Exigir sesión al cargar
     if (!requireAuthOnLoad()) {
-        // La función ya redirige a login; no seguimos inicializando.
+        // redirige a login
     } else {
         const form = document.getElementById('checkoutForm');
-
         form.onsubmit = async (e) => {
             e.preventDefault();
 
-            // Debug: imprime token antes de enviar
             const token = API.token();
-            console.log('[CHECKOUT] token presente:', !!token, token ? token.substring(0, 12) + '...' : '');
-
             if (!token) {
                 showToast('Debes iniciar sesión para confirmar el pedido.', 'error');
                 setTimeout(() => (location.href = 'login.html'), 600);
@@ -93,9 +92,7 @@
                 const r = await API.post('/api/orders/checkout', body);
                 showToast('Pedido creado', 'success');
                 setTimeout(() => (location.href = `order-detail.html?orderId=${r.orderId}`), 600);
-            } catch (err) {
-                console.error('[CHECKOUT] error:', err?.message || err);
-            }
+            } catch {}
         };
     }
 </script>
