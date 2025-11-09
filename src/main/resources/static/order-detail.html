@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle Pedido</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="theme-light">
+<header class="app-header">
+    <div class="logo-bar">
+        <h1>Detalle Pedido</h1>
+        <button id="themeToggle" class="btn small">🌓</button>
+    </div>
+    <nav class="main-nav">
+        <a href="index.html">Inicio</a>
+        <a href="catalog.html">Catálogo</a>
+        <a href="cart.html">Carrito</a>
+        <a href="order-create.html">Crear Pedido</a>
+        <a href="order-detail.html" class="active">Detalle</a>
+        <a href="admin.html" data-requires-role="ADMIN">Admin</a>
+    </nav>
+</header>
+<main class="content">
+    <section class="panel">
+        <div id="orderDetailContainer"></div>
+    </section>
+</main>
+<footer class="footer">Detalle consolidado</footer>
+<div id="toastContainer" class="toast-container"></div>
+<script type="module">
+    import { initTheme } from './js/util.js';
+    import { hydrateSessionUI } from './js/session.js';
+    import { initOrderDetailPage } from './js/orders.js';
+    initTheme();
+    hydrateSessionUI();
+    initOrderDetailPage();
+</script>
+</body>
+</html>

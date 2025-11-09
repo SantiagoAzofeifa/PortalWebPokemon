@@ -2,22 +2,23 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Administración</title>
+    <title>Panel Admin</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="theme-light">
 <header class="app-header">
-    <div class="logo-area">
-        <h1>Panel Admin</h1>
+    <div class="logo-bar">
+        <h1>Administración</h1>
         <button id="themeToggle" class="btn small">🌓</button>
     </div>
     <nav class="main-nav">
         <a href="index.html">Inicio</a>
         <a href="catalog.html">Catálogo</a>
-        <a href="Cart.html">Carrito</a>
+        <a href="cart.html">Carrito</a>
         <a href="countries.html">Países</a>
-        <a href="admin.html" class="active">Admin</a>
+        <a href="order-create.html">Crear Pedido</a>
+        <a href="admin.html" class="active" data-requires-role="ADMIN">Admin</a>
         <a href="login.html" id="loginLink">Login</a>
         <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
     </nav>
@@ -26,42 +27,43 @@
     <section class="panel">
         <h2>Timeout de Sesión</h2>
         <form id="timeoutForm" class="inline-form">
-            <label>Segundos
-                <input type="number" name="timeoutSeconds" id="timeoutSeconds" value="600" min="10">
+            <label class="form-field">Segundos
+                <input type="number" id="timeoutSeconds" min="10" value="600">
             </label>
             <button class="btn primary" type="submit">Actualizar</button>
         </form>
-        <p id="timeoutInfo">Actual: —</p>
+        <p id="timeoutInfo" class="status-line">Actual: —</p>
     </section>
 
     <section class="panel">
         <h2>Auditoría de Logins</h2>
-        <button id="loadAuditsBtn" class="btn">Cargar Auditoría</button>
-        <table class="audit-table">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>UserId</th>
-                <th>Username</th>
-                <th>Acción</th>
-                <th>Timestamp</th>
-            </tr>
-            </thead>
+        <button id="loadAuditsBtn" class="btn outline">Cargar Auditoría</button>
+        <table class="table">
+            <thead><tr><th>ID</th><th>UserId</th><th>Usuario</th><th>Acción</th><th>Fecha</th></tr></thead>
             <tbody id="auditsBody"></tbody>
         </table>
     </section>
 
     <section class="panel">
-        <h2>CRUD de Productos</h2>
+        <h2>Usuarios</h2>
+        <button id="reloadUsersBtn" class="btn">Recargar Usuarios</button>
+        <table class="table">
+            <thead><tr><th>ID</th><th>Usuario</th><th>Rol</th><th>Activo</th><th>Acciones</th></tr></thead>
+            <tbody id="usersBody"></tbody>
+        </table>
+    </section>
+
+    <section class="panel">
+        <h2>CRUD Productos</h2>
         <form id="productForm" class="form-grid">
-            <input type="hidden" name="id" id="prodId">
-            <label>Nombre
+            <input type="hidden" id="prodId" name="id">
+            <label class="form-field">Nombre
                 <input name="name" id="prodName" required>
             </label>
-            <label>Precio
+            <label class="form-field">Precio
                 <input name="price" id="prodPrice" type="number" step="0.01" min="0" required>
             </label>
-            <label>Categoría
+            <label class="form-field">Categoría
                 <select name="category" id="prodCategory">
                     <option value="COMICS">COMICS</option>
                     <option value="FIGURAS">FIGURAS</option>
@@ -69,29 +71,37 @@
                     <option value="SERIES">SERIES</option>
                 </select>
             </label>
-            <label>Imagen URL
+            <label class="form-field">Imagen URL
                 <input name="imageUrl" id="prodImage">
             </label>
-            <label>Descripción
+            <label class="form-field">Descripción
                 <textarea name="description" id="prodDesc" rows="2"></textarea>
             </label>
-            <button class="btn success" type="submit">Guardar</button>
-            <button type="button" class="btn outline" id="resetProdBtn">Limpiar</button>
+            <label class="form-field">País Origen
+                <input name="countryOfOrigin">
+            </label>
+            <label class="form-field">Países Disponibles (CSV)
+                <input name="availableCountriesCsv">
+            </label>
+            <label class="form-field">Países Prohibidos (CSV)
+                <input name="bannedCountriesCsv">
+            </label>
+            <div class="flex-row">
+                <button class="btn success" type="submit">Guardar</button>
+                <button class="btn outline" type="button" id="resetProdBtn">Limpiar</button>
+            </div>
         </form>
-
-        <div class="responsive-grid" id="adminProductsGrid"></div>
+        <div id="adminProductsGrid" class="grid responsive" style="margin-top:1rem;"></div>
     </section>
 </main>
-<footer class="app-footer">
-    <small>Panel administrativo - sólo usuarios con rol ADMIN</small>
-</footer>
+<footer class="footer">Panel administrativo</footer>
 <div id="toastContainer" class="toast-container"></div>
-<script src="/js/util.js"></script>
-<script src="/js/api.js"></script>
-<script src="/js/session.js"></script>
-<script src="/js/admin.js"></script>
-<script>
-    initThemeToggle();
+<script type="module">
+    import { initTheme } from './js/util.js';
+    import { hydrateSessionUI } from './js/session.js';
+    import { initAdminPage } from './js/admin.js';
+    initTheme();
+    hydrateSessionUI();
     initAdminPage();
 </script>
 </body>

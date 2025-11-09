@@ -1,78 +1,69 @@
+// session.js
 import API from './api.js';
-import { qs, showToast } from './util.js';
+import {qs, qsa, showToast} from './util.js';
 
-let countdownInterval = null;
+let countdownTimer = null;
 
-function hydrateUserInfo() {
-    const out = qs('#userInfo');
+function hydrateSessionUI() {
+    const token = API.token();
     const loginLink = qs('#loginLink');
     const logoutBtn = qs('#logoutBtn');
-    const token = API.token();
+    const userInfo = qs('#userInfo');
     if (!token) {
-        if (out) out.textContent = 'No autenticado';
-        if (logoutBtn) logoutBtn.classList.add('hidden');
         if (loginLink) loginLink.classList.remove('hidden');
+        if (logoutBtn) logoutBtn.classList.add('hidden');
+        if (userInfo) userInfo.textContent = 'No autenticado';
+        applyRoleVisibility(null);
         return;
     }
-    API.get('/api/auth/me')
-        .then(data => {
-            if (out) out.textContent = `${data.username} (${data.role})`;
-            if (logoutBtn) logoutBtn.classList.remove('hidden');
-            if (loginLink) loginLink.classList.add('hidden');
-            applyRoleVisibility(data.role);
-        })
-        .catch(()=> {
-            logoutLocal();
-            hydrateUserInfo();
-        });
-    if (logoutBtn) {
-        logoutBtn.onclick = async () => {
-            try {
-                await API.post('/api/auth/logout',{});
-            } catch {}
-            logoutLocal();
+    API.get('/api/auth/me').then(d=>{
+        if (loginLink) loginLink.classList.add('hidden');
+        if (logoutBtn) logoutBtn.classList.remove('hidden');
+        if (userInfo) userInfo.textContent = `${d.username} (${d.role})`;
+        applyRoleVisibility(d.role);
+        startCountdown(d.expiresAt);
+        logoutBtn.onclick = async ()=>{
+            try { await API.post('/api/auth/logout',{}); } catch{}
+            localStorage.removeItem('sessionToken');
+            showToast('Sesión cerrada','info');
             location.href='login.html';
         };
-    }
-}
-
-function logoutLocal() {
-    localStorage.removeItem('sessionToken');
-    showToast('Sesión terminada','info');
-}
-
-function applyRoleVisibility(role) {
-    document.querySelectorAll('[data-requires-role]').forEach(el => {
-        const needs = el.getAttribute('data-requires-role');
-        if (needs !== role) {
-            el.classList.add('hidden');
-        } else {
-            el.classList.remove('hidden');
-        }
+    }).catch(()=>{
+        localStorage.removeItem('sessionToken');
+        hydrateSessionUI();
     });
 }
 
-function startSessionCountdown(targetId) {
-    if (countdownInterval) clearInterval(countdownInterval);
-    const el = qs(`#${targetId}`);
+function applyRoleVisibility(role) {
+    qsa('[data-requires-role]').forEach(el=>{
+        const need = el.getAttribute('data-requires-role');
+        if (!role || role !== need) el.classList.add('hidden'); else el.classList.remove('hidden');
+    });
+}
+
+function startCountdown(expiresAt) {
+    const el = qs('#sessionCountdown');
     if (!el) return;
-    const token = API.token();
-    if (!token) { el.textContent = '—'; return; }
-    API.get('/api/auth/me').then(data => {
-        updateCountdown(el, data.expiresAt);
-        countdownInterval = setInterval(()=> updateCountdown(el, data.expiresAt), 1000);
-    }).catch(()=> el.textContent='Expirada');
+    if (countdownTimer) clearInterval(countdownTimer);
+    countdownTimer = setInterval(()=>{
+        const diff = (new Date(expiresAt).getTime() - Date.now())/1000;
+        if (diff <= 0) {
+            el.textContent = 'Expirada';
+            el.style.color='var(--danger)';
+            clearInterval(countdownTimer);
+            return;
+        }
+        el.textContent = `Expira en ${Math.floor(diff)}s`;
+        if (diff < 30) el.style.color='var(--danger)';
+    },1000);
 }
 
-function updateCountdown(el, expiresAt) {
-    const diff = (new Date(expiresAt).getTime() - Date.now())/1000;
-    if (diff <= 0) {
-        el.textContent = 'Sesión expirada';
-        el.classList.add('warning');
-        return;
-    }
-    el.textContent = `Expira en ${Math.floor(diff)}s`;
-    if (diff < 30) el.style.color='var(--color-danger)';
+async function renewSessionManual() {
+    try {
+        const d = await API.post('/api/auth/renew',{});
+        showToast('Sesión renovada','success');
+        startCountdown(new Date(Date.now()+d.expiresIn*1000).toISOString());
+    } catch {}
 }
 
-export { hydrateUserInfo, startSessionCountdown };
+export { hydrateSessionUI, renewSessionManual };

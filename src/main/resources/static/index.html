@@ -2,77 +2,63 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Portal Web PokeAPI - Inicio</title>
+    <title>Portal PokeVentas - Inicio</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="theme-light">
 <header class="app-header">
-    <div class="logo-area">
-        <h1 tabindex="0">Portal PokeVentas</h1>
+    <div class="logo-bar">
+        <h1>Portal PokeVentas</h1>
         <button id="themeToggle" class="btn small" aria-label="Cambiar tema">🌓</button>
     </div>
-    <nav class="main-nav" aria-label="Navegación principal">
+    <nav class="main-nav">
         <a href="index.html" class="active">Inicio</a>
         <a href="catalog.html">Catálogo</a>
         <a href="Cart.html">Carrito</a>
         <a href="countries.html">Países</a>
+        <a href="order-create.html">Crear Pedido</a>
+        <a href="order-detail.html?orderId=1" data-dynamic="true">Detalle Pedido</a>
+        <a href="order-list.html">Mis Pedidos</a>
         <a href="admin.html" data-requires-role="ADMIN">Admin</a>
         <a href="login.html" id="loginLink">Login</a>
         <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
     </nav>
 </header>
-
 <main class="content">
     <section class="hero">
-        <h2>Bienvenido al Portal de Ventas basado en PokeAPI</h2>
-        <p>Explora Pokémon y otros recursos para transformarlos en productos de las categorías: Comics, Figuras, Eventos y Series.</p>
-        <div class="actions-row">
-            <a class="btn primary" href="catalog.html">Ir al Catálogo</a>
-            <a class="btn" href="countries.html">Ver Países</a>
+        <h2>Bienvenido</h2>
+        <p>Portal de venta con categorías: Comics, Figuras, Eventos, Series. Integración con PokeAPI y RestCountries. Flujo de venta multi-etapa.</p>
+        <p class="status-line">Sesión: <span id="userInfo">No autenticado</span> | <span id="sessionCountdown">—</span></p>
+        <div class="flex-row">
+            <a class="btn primary" href="catalog.html">Explorar productos</a>
+            <a class="btn" href="Cart.html">Ir al carrito</a>
+            <a class="btn" href="order-create.html">Crear Pedido</a>
         </div>
     </section>
 
-    <section class="stats-grid" aria-label="Estado rápido">
-        <article class="stat-card" id="statUser">
-            <h3>Tu sesión</h3>
-            <p id="userInfo">No autenticado</p>
-        </article>
-        <article class="stat-card">
-            <h3>Productos Ejemplo</h3>
-            <ul id="sampleProducts" class="mini-list"></ul>
-        </article>
-        <article class="stat-card">
-            <h3>Tiempo de Sesión</h3>
-            <p id="sessionCountdown">—</p>
-        </article>
-    </section>
-
-    <section>
-        <h3>Características</h3>
-        <ul class="feature-list">
-            <li>Consumo de PokeAPI y RestCountries</li>
-            <li>Carrito con CRUD y persistencia</li>
-            <li>Administración de usuarios y timeout de sesión</li>
-            <li>Diseño responsive + tema claro/oscuro</li>
-            <li>Manejo de errores y estados de carga accesibles</li>
+    <section class="panel">
+        <h3>Características del Proyecto</h3>
+        <ul style="margin:0 0 .6rem 1.1rem;font-size:.85rem;">
+            <li>Sesión en caché con timeout configurable</li>
+            <li>CRUD de productos y usuarios (ADMIN)</li>
+            <li>Carrito persistente por usuario</li>
+            <li>Pedidos y etapas: almacén, empaque, entrega, pago</li>
+            <li>Patrón P-S para indisponibilidades</li>
+            <li>Consumo dinámico de PokeAPI y RestCountries</li>
+            <li>Manejo de errores y mensajes accesibles</li>
         </ul>
     </section>
 </main>
-
-<footer class="app-footer">
-    <small>Data parcialmente provista por <a href="https://pokeapi.co" target="_blank" rel="noopener">PokeAPI</a> y <a href="https://restcountries.com" target="_blank" rel="noopener">RestCountries</a>.</small>
+<footer class="footer">
+    <small>Datos externos: <a href="https://pokeapi.co" target="_blank" rel="noopener">PokeAPI</a> / <a href="https://restcountries.com" target="_blank" rel="noopener">RestCountries</a></small>
 </footer>
-
 <div id="toastContainer" class="toast-container" aria-live="polite"></div>
-<script src="/js/util.js"></script>
-<script src="/js/api.js"></script>
-<script src="/js/session.js"></script>
-<script>
-    initThemeToggle();
-    hydrateUserInfo();
-    loadSampleProducts();
-    startSessionCountdown('sessionCountdown');
+<script type="module">
+    import { initTheme } from './js/util.js';
+    import { hydrateSessionUI } from './js/session.js';
+    initTheme();
+    hydrateSessionUI();
 </script>
 </body>
 </html>

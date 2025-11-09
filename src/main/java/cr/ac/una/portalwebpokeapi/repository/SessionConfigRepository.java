@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface SessionConfigRepository extends JpaRepository<SessionConfigEntity, Long> {
+public interface SessionConfigRepository extends JpaRepository<SessionConfigEntity,Long> {
     Optional<SessionConfigEntity> findTopByOrderByIdAsc();
 }

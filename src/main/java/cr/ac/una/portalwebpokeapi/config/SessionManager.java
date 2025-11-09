@@ -1,7 +1,5 @@
 package cr.ac.una.portalwebpokeapi.config;
 
-import lombok.Getter;
-
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
@@ -13,25 +11,24 @@ public class SessionManager {
         public final String userId;
         public final String username;
         public final String role;
-        @Getter
         private Instant expiresAt;
         public SessionData(String userId, String username, String role, Instant expiresAt) {
             this.userId = userId; this.username = username; this.role = role; this.expiresAt = expiresAt;
         }
-
+        public Instant getExpiresAt() { return expiresAt; }
         public void renew(long seconds) { this.expiresAt = Instant.now().plusSeconds(seconds); }
     }
 
     private final Map<String, SessionData> sessions = new ConcurrentHashMap<>();
-    private long defaultTimeoutSeconds;
+    private long defaultTimeout;
 
-    public SessionManager(long defaultTimeoutSeconds) {
-        this.defaultTimeoutSeconds = defaultTimeoutSeconds;
+    public SessionManager(long defaultTimeout) {
+        this.defaultTimeout = defaultTimeout;
     }
 
     public String create(String userId, String username, String role) {
         String token = UUID.randomUUID().toString();
-        sessions.put(token, new SessionData(userId, username, role, Instant.now().plusSeconds(defaultTimeoutSeconds)));
+        sessions.put(token, new SessionData(userId, username, role, Instant.now().plusSeconds(defaultTimeout)));
         return token;
     }
 
@@ -57,9 +54,12 @@ public class SessionManager {
         if (token != null) sessions.remove(token);
     }
 
-    public void setDefaultTimeoutSeconds(long seconds) {
+    public void setDefaultTimeout(long seconds) {
         if (seconds < 10) seconds = 10;
-        this.defaultTimeoutSeconds = seconds;
+        this.defaultTimeout = seconds;
     }
 
+    public long getDefaultTimeout() {
+        return defaultTimeout;
+    }
 }

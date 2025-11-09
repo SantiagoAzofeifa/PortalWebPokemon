@@ -8,8 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class AppBeans {
 
     @Bean
-    public SessionManager sessionManager(
-            @Value("${app.session.timeout-seconds:600}") long timeoutSeconds) {
-        return new SessionManager(timeoutSeconds);
+    public SessionManager sessionManager(@Value("${app.session.timeout-seconds:600}") long timeout) {
+        return new SessionManager(timeout);
     }
 }

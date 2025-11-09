@@ -1,22 +1,26 @@
 package cr.ac.una.portalwebpokeapi.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.Instant;
 
-@Entity
-@Table(name = "users")
+@Getter
+@Setter
+@Entity @Table(name="users")
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable=false, unique = true, length = 80)
+    @Column(nullable=false, unique=true, length=80)
     private String username;
 
-    @Column(nullable=false, length = 120)
+    @Column(nullable=false, length=120)
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable=false, length = 20)
+    @Column(nullable=false, length=20)
     private UserRole role = UserRole.USER;
 
     @Column(nullable=false)
@@ -25,16 +29,5 @@ public class User {
     @Column(nullable=false)
     private Instant createdAt = Instant.now();
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-    public String getPasswordHash() { return passwordHash; }
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
-    public UserRole getRole() { return role; }
-    public void setRole(UserRole role) { this.role = role; }
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
-    public Instant getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+
 }

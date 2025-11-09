@@ -12,7 +12,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    SessionAuthenticationFilter sessionAuthenticationFilter) throws Exception {
-
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -20,17 +19,21 @@ public class SecurityConfig {
                                 "/index.html",
                                 "/css/**",
                                 "/js/**",
-                                "/static/**",
                                 "/favicon.ico",
+                                "/login.html",
+                                "/catalog.html",
+                                "/countries.html",
+                                "/cart.html",
+                                "/admin.html",
+                                "/order*.html",
                                 "/api/auth/**",
                                 "/api/catalog/**",
                                 "/api/products/**",
-                                "/api/cart/**"      // lectura del carrito también permitida (token valida si hay sesión)
+                                "/api/cart/**"
                         ).permitAll()
-                        .anyRequest().permitAll() // Puedes cambiar a authenticated() si luego quieres restringir
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(sessionAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 }

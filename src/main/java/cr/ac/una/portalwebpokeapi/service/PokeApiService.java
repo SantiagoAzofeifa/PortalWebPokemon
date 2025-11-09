@@ -3,12 +3,10 @@ package cr.ac.una.portalwebpokeapi.service;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.Map;
 
 @Service
 public class PokeApiService {
-
     private final RestTemplate rt = new RestTemplate();
     private static final String BASE = "https://pokeapi.co/api/v2";
 

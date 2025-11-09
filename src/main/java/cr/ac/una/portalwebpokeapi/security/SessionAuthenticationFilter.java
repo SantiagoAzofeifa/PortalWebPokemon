@@ -23,9 +23,7 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
-        // Aquí podrías poblar SecurityContext si quieres, por ahora lo dejamos pasar.
-        // Solo ejemplo: si token inválido y ruta privada => 401 (por ahora no se aplica a rutas permitAll).
+        // (Opcional) lógica para marcar contextos
         filterChain.doFilter(request, response);
     }
 }

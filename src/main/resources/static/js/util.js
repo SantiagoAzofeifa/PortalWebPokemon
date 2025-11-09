@@ -1,40 +1,38 @@
-// Utilidades genéricas
-
+// util.js
 function qs(sel, ctx=document){ return ctx.querySelector(sel); }
 function qsa(sel, ctx=document){ return [...ctx.querySelectorAll(sel)]; }
 
-function showToast(message, type='info', timeout=4000) {
-    const c = qs('#toastContainer');
-    if (!c) return;
+function showToast(msg, type='info', timeout=4000) {
+    const c = qs('#toastContainer'); if (!c) return;
     const d = document.createElement('div');
-    d.className = `toast ${type==='error'?'error': type==='success'?'success':''}`;
+    d.className = `toast ${type==='error'?'error': type==='success'?'success': type==='warn'?'warn':''}`;
     d.setAttribute('role','alert');
-    d.textContent = message;
+    d.textContent = msg;
     c.appendChild(d);
     setTimeout(()=> d.remove(), timeout);
 }
 
-function initThemeToggle() {
+function formatMoney(v){ return '$' + Number(v).toFixed(2); }
+
+function initTheme() {
     const btn = qs('#themeToggle');
     if (!btn) return;
-    btn.addEventListener('click', () => {
-        document.body.classList.toggle('theme-dark');
-        localStorage.setItem('theme', document.body.classList.contains('theme-dark') ? 'dark':'light');
-    });
     const saved = localStorage.getItem('theme');
     if (saved === 'dark') document.body.classList.add('theme-dark');
-}
-
-function formatMoney(v) {
-    return '$' + Number(v).toFixed(2);
-}
-
-function debounce(fn, ms=300) {
-    let t;
-    return (...args)=>{
-        clearTimeout(t);
-        t = setTimeout(()=>fn(...args), ms);
+    btn.onclick = () => {
+        document.body.classList.toggle('theme-dark');
+        localStorage.setItem('theme', document.body.classList.contains('theme-dark')?'dark':'light');
     };
 }
 
-export { qs, qsa, showToast, initThemeToggle, formatMoney, debounce };
+function debounce(fn, ms=300){
+    let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args),ms); };
+}
+
+function escapeHTML(str='') {
+    return str.replace(/[&<>"']/g, ch => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[ch]));
+}
+
+export { qs, qsa, showToast, formatMoney, initTheme, debounce, escapeHTML };

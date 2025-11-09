@@ -1,12 +1,11 @@
 package cr.ac.una.portalwebpokeapi.repository;
 
-
 import cr.ac.una.portalwebpokeapi.model.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface CartItemRepository extends JpaRepository<CartItem, Long> {
+public interface CartItemRepository extends JpaRepository<CartItem,Long> {
     List<CartItem> findByCartId(Long cartId);
     void deleteByCartId(Long cartId);
 }

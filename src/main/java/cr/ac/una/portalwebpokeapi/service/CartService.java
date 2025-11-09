@@ -12,28 +12,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-@Service
-@RequiredArgsConstructor
+@Service @RequiredArgsConstructor
 public class CartService {
-
     private final CartRepository cartRepo;
     private final CartItemRepository itemRepo;
     private final ProductRepository productRepo;
 
     @Transactional
-    public Cart getOrCreateCart(Long userId) {
+    public Cart getOrCreate(Long userId) {
         return cartRepo.findByUserId(userId).orElseGet(() -> {
-            Cart c = new Cart();
-            c.setUserId(userId);
-            return cartRepo.save(c);
+            Cart c = new Cart(); c.setUserId(userId); return cartRepo.save(c);
         });
     }
 
-    @Transactional(readOnly = true)
-    public Map<String,Object> getCartResponse(Long userId) {
-        Cart cart = getOrCreateCart(userId);
+    @Transactional(readOnly=true)
+    public Map<String,Object> view(Long userId) {
+        Cart cart = getOrCreate(userId);
         List<CartItem> items = itemRepo.findByCartId(cart.getId());
-        double total = items.stream().mapToDouble(i -> i.getUnitPrice() * i.getQuantity()).sum();
+        double total = items.stream().mapToDouble(i->i.getUnitPrice()*i.getQuantity()).sum();
         Map<String,Object> out = new HashMap<>();
         out.put("cartId", cart.getId());
         out.put("items", items);
@@ -43,18 +39,13 @@ public class CartService {
 
     @Transactional
     public void addItem(Long userId, Long productId, int qty) {
-        if (qty < 1) qty = 1;
-        Cart cart = getOrCreateCart(userId);
-        Product p = productRepo.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado"));
-
+        if (qty<1) qty=1;
+        Cart cart = getOrCreate(userId);
+        Product p = productRepo.findById(productId).orElseThrow(() -> new IllegalArgumentException("Producto no encontrado"));
         CartItem existing = itemRepo.findByCartId(cart.getId()).stream()
-                .filter(ci -> ci.getProductId().equals(productId))
-                .findFirst()
-                .orElse(null);
-
+                .filter(ci-> ci.getProductId().equals(productId)).findFirst().orElse(null);
         if (existing != null) {
-            existing.setQuantity(existing.getQuantity() + qty);
+            existing.setQuantity(existing.getQuantity()+qty);
             itemRepo.save(existing);
         } else {
             CartItem it = new CartItem();
@@ -67,9 +58,9 @@ public class CartService {
     }
 
     @Transactional
-    public void updateItemQuantity(Long userId, Long itemId, int qty) {
-        if (qty < 1) qty = 1;
-        Cart cart = getOrCreateCart(userId);
+    public void updateQty(Long userId, Long itemId, int qty) {
+        if (qty<1) qty=1;
+        Cart cart = getOrCreate(userId);
         CartItem it = itemRepo.findById(itemId).orElseThrow(() -> new IllegalArgumentException("Item no encontrado"));
         if (!it.getCartId().equals(cart.getId())) throw new SecurityException("FORBIDDEN");
         it.setQuantity(qty);
@@ -78,15 +69,15 @@ public class CartService {
 
     @Transactional
     public void removeItem(Long userId, Long itemId) {
-        Cart cart = getOrCreateCart(userId);
+        Cart cart = getOrCreate(userId);
         CartItem it = itemRepo.findById(itemId).orElseThrow(() -> new IllegalArgumentException("Item no encontrado"));
         if (!it.getCartId().equals(cart.getId())) throw new SecurityException("FORBIDDEN");
         itemRepo.delete(it);
     }
 
     @Transactional
-    public void clearCart(Long userId) {
-        Cart cart = getOrCreateCart(userId);
+    public void clear(Long userId) {
+        Cart cart = getOrCreate(userId);
         itemRepo.deleteByCartId(cart.getId());
     }
 }

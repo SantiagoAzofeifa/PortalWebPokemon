@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pago Pedido</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="theme-light">
+<header class="app-header">
+    <div class="logo-bar">
+        <h1>Pago</h1>
+        <button id="themeToggle" class="btn small">🌓</button>
+    </div>
+    <nav class="main-nav">
+        <a href="index.html">Inicio</a>
+        <a href="#" id="orderLink">Volver Detalle</a>
+    </nav>
+</header>
+<main class="content narrow">
+    <section class="panel">
+        <h2>Datos de Pago</h2>
+        <form id="paymentForm" class="form-grid">
+            <label class="form-field">Moneda
+                <input name="currency" placeholder="USD" value="USD">
+            </label>
+            <label class="form-field">Método
+                <input name="method" placeholder="Tarjeta">
+            </label>
+            <label class="form-field">Fecha Pago
+                <input type="datetime-local" name="paidAt">
+            </label>
+            <label class="form-field">Notas
+                <textarea name="notes" rows="2"></textarea>
+            </label>
+            <button class="btn success" type="submit">Guardar</button>
+        </form>
+    </section>
+</main>
+<footer class="footer">Etapa Pago</footer>
+<div id="toastContainer" class="toast-container"></div>
+<script type="module">
+    import { initTheme } from './js/util.js';
+    import { hydrateSessionUI } from './js/session.js';
+    import { initPaymentPage } from './js/orders.js';
+    initTheme();
+    hydrateSessionUI();
+    initPaymentPage();
+</script>
+</body>
+</html>

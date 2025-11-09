@@ -8,15 +8,16 @@
 </head>
 <body class="theme-light">
 <header class="app-header">
-    <div class="logo-area">
+    <div class="logo-bar">
         <h1>Autenticación</h1>
         <button id="themeToggle" class="btn small">🌓</button>
     </div>
     <nav class="main-nav">
         <a href="index.html">Inicio</a>
         <a href="catalog.html">Catálogo</a>
-        <a href="Cart.html">Carrito</a>
+        <a href="cart.html">Carrito</a>
         <a href="countries.html">Países</a>
+        <a href="order-create.html">Crear Pedido</a>
         <a href="admin.html" data-requires-role="ADMIN">Admin</a>
     </nav>
 </header>
@@ -24,48 +25,46 @@
     <section class="panel">
         <h2>Registro</h2>
         <form id="registerForm" class="form-grid" autocomplete="off">
-            <label>Usuario
+            <label class="form-field">Usuario
                 <input name="username" required minlength="3">
             </label>
-            <label>Contraseña
+            <label class="form-field">Contraseña
                 <input type="password" name="password" required minlength="4">
             </label>
-            <label>Rol
+            <label class="form-field">Rol
                 <select name="role">
-                    <option value="USER">Usuario</option>
-                    <option value="ADMIN">Administrador</option>
+                    <option value="USER">USER</option>
+                    <option value="ADMIN">ADMIN</option>
                 </select>
             </label>
-            <button class="btn primary" type="submit">Registrar</button>
+            <button class="btn success" type="submit">Registrar</button>
         </form>
     </section>
 
     <section class="panel">
         <h2>Login</h2>
         <form id="loginForm" class="form-grid" autocomplete="off">
-            <label>Usuario
+            <label class="form-field">Usuario
                 <input name="username" required>
             </label>
-            <label>Contraseña
+            <label class="form-field">Contraseña
                 <input type="password" name="password" required>
             </label>
-            <button class="btn success" type="submit">Ingresar</button>
+            <button class="btn primary" type="submit">Ingresar</button>
         </form>
-        <button id="renewBtn" class="btn outline hidden">Renovar Sesión Manualmente</button>
-        <pre id="authOutput" class="code-block" aria-live="polite"></pre>
+        <button id="renewBtn" class="btn outline hidden" style="margin-top:.6rem;">Renovar Sesión</button>
+        <pre id="authOutput" class="code-block" style="margin-top:.7rem;" aria-live="polite"></pre>
     </section>
 </main>
-<footer class="app-footer">
-    <small>&copy; 2025 Portal PokeVentas</small>
-</footer>
+<footer class="footer">&copy; 2025 Portal PokeVentas</footer>
 <div id="toastContainer" class="toast-container"></div>
-<script src="/js/util.js"></script>
-<script src="/js/api.js"></script>
-<script src="/js/session.js"></script>
-<script src="/js/auth.js"></script>
-<script>
-    initThemeToggle();
-    initAuthForms();
+<script type="module">
+    import { initTheme } from './js/util.js';
+    import { hydrateSessionUI } from './js/session.js';
+    import { initAuthPage } from './js/auth.js';
+    initTheme();
+    hydrateSessionUI();
+    initAuthPage();
 </script>
 </body>
 </html>

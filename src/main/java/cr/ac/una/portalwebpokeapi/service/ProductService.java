@@ -8,25 +8,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-@Service
-@RequiredArgsConstructor
+@Service @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository repo;
 
-    public Page<Product> listByCategory(Category category, Pageable pageable) {
+    public Page<Product> list(Category category, Pageable pageable) {
         return repo.findByCategory(category, pageable);
     }
-
     public Product get(Long id) {
         return repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Producto no encontrado"));
     }
-
     public Product create(Product p) {
-        validate(p);
-        p.setId(null);
+        validate(p); p.setId(null);
         return repo.save(p);
     }
-
     public Product update(Long id, Product p) {
         Product cur = get(id);
         if (p.getName()!=null) cur.setName(p.getName());
@@ -40,12 +35,10 @@ public class ProductService {
         validate(cur);
         return repo.save(cur);
     }
-
     public void delete(Long id) {
         if (!repo.existsById(id)) throw new IllegalArgumentException("Producto no encontrado");
         repo.deleteById(id);
     }
-
     private void validate(Product p) {
         if (p.getCategory()==null) throw new IllegalArgumentException("Categoría requerida");
         if (p.getName()==null || p.getName().isBlank()) throw new IllegalArgumentException("Nombre requerido");
