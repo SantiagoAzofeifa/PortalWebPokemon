@@ -14,7 +14,7 @@ function initOrderCreatePage() {
             const data = await API.get('/api/cart');
             const box = qs('#cartPreview');
             box.innerHTML = '';
-            data.items.forEach(i=>{
+            (data.items||[]).forEach(i=>{
                 const div = document.createElement('div');
                 div.className='generic-card';
                 div.style.padding='.5rem .6rem';
@@ -31,7 +31,7 @@ function initOrderCreatePage() {
             productList.innerHTML='';
             for (const c of cats) {
                 const data = await API.get(`/api/products?category=${c}&page=0&size=8`);
-                data.content.forEach(p=>{
+                (data.content||[]).forEach(p=>{
                     const cb = document.createElement('div');
                     cb.className='generic-card';
                     cb.style.padding='.5rem';
@@ -82,11 +82,8 @@ function initOrderListPage() {
 
     async function loadOrders() {
         list.innerHTML = '<div class="generic-card" style="padding:1rem;">Cargando...</div>';
-        // No endpoint listAll, reuse by user scanning (need an endpoint: /api/orders?mine) -> simplificamos simulando con last N via filter
-        // Recomendación: crear endpoint en backend para listar órdenes del usuario. Aquí asumimos que existe /api/auth/me -> userId.
         try {
             const me = await API.get('/api/auth/me');
-            // No endpoint directo: mostraremos una ayuda al usuario
             list.innerHTML = `
         <div class="generic-card" style="padding:1rem;">
           <p>No hay endpoint para listar todas las órdenes en el backend actual. Puedes abrir una orden recién creada:</p>
@@ -127,7 +124,6 @@ function renderDetail(data) {
     const pk = data.packaging;
     const dv = data.delivery;
     const pm = data.payment;
-    const ps = data.psRecords||[];
     return `
     <div class="panel">
       <h2>Orden #${order.id}</h2>
@@ -135,17 +131,17 @@ function renderDetail(data) {
       <p><strong>Estado:</strong> ${escapeHTML(order.status)}</p>
       <h3>Items</h3>
       <table class="table">
-        <thead><tr><th>ID</th><th>ProdID</th><th>Cant</th><th>$</th></tr></thead>
+        <thead><tr><th>ID</th><th>ProdID</th><th>Categoría</th><th>Cant</th><th>$</th></tr></thead>
         <tbody>
-          ${items.map(i=>`<tr><td>${i.id}</td><td>${i.productId}</td><td>${i.quantity}</td><td>${formatMoney(i.unitPrice*i.quantity)}</td></tr>`).join('')}
+          ${items.map(i=>`<tr><td>${i.id}</td><td>${i.productId}</td><td><span class="badge small">${escapeHTML(i.productCategory||'')}</span></td><td>${i.quantity}</td><td>${formatMoney(i.unitPrice*i.quantity)}</td></tr>`).join('')}
         </tbody>
       </table>
       <h3>Etapas</h3>
-      <p><a class="btn small" href="order-warehouse.html?orderId=${order.id}">Almacén</a>
+      <p>
+         <a class="btn small" href="order-warehouse.html?orderId=${order.id}">Almacén</a>
          <a class="btn small" href="order-packaging.html?orderId=${order.id}">Empaque</a>
          <a class="btn small" href="order-delivery.html?orderId=${order.id}">Entrega</a>
          <a class="btn small" href="order-payment.html?orderId=${order.id}">Pago</a>
-         <a class="btn small" href="order-ps.html?orderId=${order.id}">Patrón P-S</a>
       </p>
       <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;">
         <div class="generic-card" style="padding:.7rem;">
@@ -163,10 +159,6 @@ function renderDetail(data) {
         <div class="generic-card" style="padding:.7rem;">
           <h4>Pago</h4>
           ${pm? renderPayment(pm): '<em>No registrado</em>'}
-        </div>
-        <div class="generic-card" style="padding:.7rem;">
-          <h4>Registros P-S</h4>
-          ${ps.length? ps.map(r=>`<div>#${r.id} prod:${r.productId} ${escapeHTML(r.reason||'')} (${r.resolved?'RESUELTO':'PENDIENTE'})</div>`).join(''): '<em>Ninguno</em>'}
         </div>
       </div>
     </div>
@@ -212,159 +204,7 @@ function renderPayment(pm){
   `;
 }
 
-function initWarehousePage() {
-    const params = new URLSearchParams(location.search);
-    const orderId = params.get('orderId');
-    const form = qs('#warehouseForm');
-    qs('#orderLink').href=`order-detail.html?orderId=${orderId}`;
-    form.onsubmit = async e=>{
-        e.preventDefault();
-        const fd=new FormData(form);
-        const body={
-            inDate: fd.get('inDate')? new Date(fd.get('inDate')).toISOString(): null,
-            outDate: fd.get('outDate')? new Date(fd.get('outDate')).toISOString(): null,
-            stockChecked: fd.get('stockChecked')==='on',
-            stockQty: fd.get('stockQty')? Number(fd.get('stockQty')): null,
-            location: fd.get('location'),
-            originCountry: fd.get('originCountry'),
-            notes: fd.get('notes')
-        };
-        try {
-            await API.put(`/api/orders/${orderId}/warehouse`, body);
-            showToast('Almacén guardado','success');
-            setTimeout(()=> location.href=`order-detail.html?orderId=${orderId}`,800);
-        } catch {}
-    };
-}
-
-function initPackagingPage() {
-    const params = new URLSearchParams(location.search);
-    const orderId = params.get('orderId');
-    qs('#orderLink').href=`order-detail.html?orderId=${orderId}`;
-    qs('#packagingForm').onsubmit = async e=>{
-        e.preventDefault();
-        const fd=new FormData(e.target);
-        const body={
-            size: fd.get('size'),
-            type: fd.get('type'),
-            materials: fd.get('materials'),
-            fragile: fd.get('fragile')==='on',
-            notes: fd.get('notes')
-        };
-        try {
-            await API.put(`/api/orders/${orderId}/packaging`, body);
-            showToast('Empaque guardado','success');
-            setTimeout(()=> location.href=`order-detail.html?orderId=${orderId}`,800);
-        } catch {}
-    };
-}
-
-function initDeliveryPage() {
-    const params=new URLSearchParams(location.search);
-    const orderId=params.get('orderId');
-    qs('#orderLink').href=`order-detail.html?orderId=${orderId}`;
-    qs('#deliveryForm').onsubmit= async e=>{
-        e.preventDefault();
-        const fd=new FormData(e.target);
-        const body={
-            method: fd.get('method'),
-            address: fd.get('address'),
-            scheduledDate: fd.get('scheduledDate')? new Date(fd.get('scheduledDate')).toISOString(): null,
-            trackingCode: fd.get('trackingCode'),
-            notes: fd.get('notes')
-        };
-        try {
-            await API.put(`/api/orders/${orderId}/delivery`, body);
-            showToast('Entrega guardada','success');
-            setTimeout(()=> location.href=`order-detail.html?orderId=${orderId}`,800);
-        } catch {}
-    };
-}
-
-function initPaymentPage() {
-    const params=new URLSearchParams(location.search);
-    const orderId=params.get('orderId');
-    qs('#orderLink').href=`order-detail.html?orderId=${orderId}`;
-    qs('#paymentForm').onsubmit= async e=>{
-        e.preventDefault();
-        const fd=new FormData(e.target);
-        const body={
-            currency: fd.get('currency'),
-            method: fd.get('method'),
-            paidAt: fd.get('paidAt')? new Date(fd.get('paidAt')).toISOString(): null,
-            notes: fd.get('notes')
-        };
-        try {
-            await API.put(`/api/orders/${orderId}/payment`, body);
-            showToast('Pago guardado','success');
-            setTimeout(()=> location.href=`order-detail.html?orderId=${orderId}`,800);
-        } catch {}
-    };
-}
-
-function initPsPage() {
-    const params = new URLSearchParams(location.search);
-    const orderId = params.get('orderId');
-    const form = qs('#psForm');
-    const list = qs('#psList');
-    qs('#orderLink').href=`order-detail.html?orderId=${orderId}`;
-    loadPs();
-
-    async function loadPs() {
-        list.innerHTML='Cargando...';
-        try {
-            const data = await API.get(`/api/orders/${orderId}`);
-            const ps = data.psRecords||[];
-            if (!ps.length) { list.innerHTML='<em>Sin registros</em>'; return; }
-            list.innerHTML='';
-            ps.forEach(r=>{
-                const row = document.createElement('div');
-                row.className='generic-card';
-                row.style.padding='.5rem';
-                row.innerHTML = `
-          <strong>#${r.id}</strong> Prod:${r.productId} - ${escapeHTML(r.reason||'')} 
-          <span class="badge small" style="background:${r.resolved?'var(--success)':'var(--warning)'}">
-            ${r.resolved?'RESUELTO':'PENDIENTE'}
-          </span>
-          ${!r.resolved?`<button class="btn small success" data-resolve="${r.id}">Resolver</button>`:''}
-        `;
-                list.appendChild(row);
-            });
-            list.onclick = async e=>{
-                if (e.target.matches('button[data-resolve]')) {
-                    const id = e.target.getAttribute('data-resolve');
-                    try {
-                        await API.put(`/api/orders/ps/${id}/resolve`, {});
-                        showToast('Registro P-S resuelto','success');
-                        loadPs();
-                    } catch {}
-                }
-            };
-        } catch { list.innerHTML='Error'; }
-    }
-
-    form.onsubmit = async e=>{
-        e.preventDefault();
-        const fd = new FormData(form);
-        const body = {
-            productId: Number(fd.get('productId')),
-            reason: fd.get('reason')
-        };
-        if (!body.productId || !body.reason) {
-            showToast('productId y reason requeridos','error');
-            return;
-        }
-        try {
-            await API.post(`/api/orders/${orderId}/ps`, body);
-            showToast('Registro P-S creado','success');
-            form.reset();
-            loadPs();
-        } catch {}
-    };
-}
-
 export {
     initOrderCreatePage, initOrderListPage, initOrderDetailPage,
-    initWarehousePage, initPackagingPage, initDeliveryPage,
-    initPaymentPage, initPsPage
+    renderWarehouse, renderPackaging, renderDelivery, renderPayment
 };
