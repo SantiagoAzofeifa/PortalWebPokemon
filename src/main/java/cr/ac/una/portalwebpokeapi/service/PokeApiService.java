@@ -1,31 +1,28 @@
 package cr.ac.una.portalwebpokeapi.service;
 
-
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.Map;
 
 @Service
 public class PokeApiService {
 
-    private final WebClient client = WebClient.builder()
-            .baseUrl("https://pokeapi.co/api/v2")
-            .build();
+    private final RestTemplate rt = new RestTemplate();
+    private static final String BASE = "https://pokeapi.co/api/v2";
 
-    public Mono<String> listPokemon(int limit, int offset) {
-        return client.get()
-                .uri(uri -> uri.path("/pokemon").queryParam("limit", limit).queryParam("offset", offset).build())
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToMono(String.class);
+    @SuppressWarnings("unchecked")
+    public Map<String,Object> listPokemon(int limit, int offset) {
+        String url = BASE + "/pokemon?limit=" + limit + "&offset=" + offset;
+        ResponseEntity<Map> res = rt.getForEntity(url, Map.class);
+        return res.getBody();
     }
 
-    public Mono<String> getPokemon(String nameOrId) {
-        return client.get()
-                .uri("/pokemon/{id}", nameOrId)
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToMono(String.class);
+    @SuppressWarnings("unchecked")
+    public Map<String,Object> getPokemon(String nameOrId) {
+        String url = BASE + "/pokemon/" + nameOrId;
+        ResponseEntity<Map> res = rt.getForEntity(url, Map.class);
+        return res.getBody();
     }
 }

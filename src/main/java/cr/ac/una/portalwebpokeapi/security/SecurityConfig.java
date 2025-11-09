@@ -1,50 +1,36 @@
 package cr.ac.una.portalwebpokeapi.security;
 
-import jakarta.servlet.Filter;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.*;
-import org.springframework.http.HttpMethod;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.*;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.*;
-
-import java.util.List;
 
 @Configuration
-@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final Filter sessionAuthFilter; // inyectado más abajo
-
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable()) // simplifica fetch desde front
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                // rutas públicas para auth
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/catalog/**").permitAll() // catálogo público si quieres
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                );
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   SessionAuthenticationFilter sessionAuthenticationFilter) throws Exception {
 
-        // Insertamos nuestro filtro simple que convierte sesión -> Authentication
-        http.addFilterBefore(sessionAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        http.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/",
+                                "/index.html",
+                                "/css/**",
+                                "/js/**",
+                                "/static/**",
+                                "/favicon.ico",
+                                "/api/auth/**",
+                                "/api/catalog/**",
+                                "/api/products/**",
+                                "/api/cart/**"      // lectura del carrito también permitida (token valida si hay sesión)
+                        ).permitAll()
+                        .anyRequest().permitAll() // Puedes cambiar a authenticated() si luego quieres restringir
+                )
+                .addFilterBefore(sessionAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        var cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(List.of("http://localhost:5173","http://localhost:8080","http://127.0.0.1:5173"));
-        cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE"));
-        cfg.setAllowedHeaders(List.of("Content-Type","Authorization"));
-        cfg.setAllowCredentials(true);
-        var source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", cfg);
-        return source;
     }
 }

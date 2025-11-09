@@ -1,54 +1,39 @@
 package cr.ac.una.portalwebpokeapi.controller;
 
-
-import cr.ac.una.portalwebpokeapi.config.SessionManager;
-import cr.ac.una.portalwebpokeapi.model.Category;
-import cr.ac.una.portalwebpokeapi.repository.ProductRepository;
 import cr.ac.una.portalwebpokeapi.service.PokeApiService;
 import cr.ac.una.portalwebpokeapi.service.RestCountriesService;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/catalog")
 public class CatalogController {
 
-    private final ProductRepository products;
     private final PokeApiService poke;
     private final RestCountriesService countries;
-    private final SessionManager sessions;
 
-    public CatalogController(ProductRepository products, PokeApiService poke, RestCountriesService countries, SessionManager sessions) {
-        this.products = products;
+    public CatalogController(PokeApiService poke, RestCountriesService countries) {
         this.poke = poke;
         this.countries = countries;
-        this.sessions = sessions;
     }
 
-    @GetMapping("/products")
-    public ResponseEntity<?> listProducts(@RequestParam Category category,
-                                          @RequestParam(defaultValue="0") int page,
-                                          @RequestParam(defaultValue="12") int size) {
-        var pageable = PageRequest.of(Math.max(0, page), Math.max(1, size));
-        return ResponseEntity.ok(products.findByCategory(category, pageable));
+    @GetMapping(value="/countries", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> listCountries() {
+        return ResponseEntity.ok(countries.listAllCountries()); // Devuelve List<Map> o similar
     }
 
-    @GetMapping("/countries")
-    public Mono<String> listCountries() {
-        return countries.listAllCountries();
+    @GetMapping(value="/poke/list", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> pokeList(@RequestParam(defaultValue="20") int limit,
+                                      @RequestParam(defaultValue="0") int offset) {
+        return ResponseEntity.ok(poke.listPokemon(limit, offset));
     }
 
-    // Endpoints de apoyo para “semillas” desde PokeAPI (opcional para poblar productos)
-    @GetMapping("/poke/list")
-    public Mono<String> pokeList(@RequestParam(defaultValue="20") int limit,
-                                 @RequestParam(defaultValue="0") int offset) {
-        return poke.listPokemon(limit, offset);
-    }
-
-    @GetMapping("/poke/{id}")
-    public Mono<String> pokeGet(@PathVariable String id) {
-        return poke.getPokemon(id);
+    @GetMapping(value="/poke/{idOrName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> pokeGet(@PathVariable String idOrName) {
+        String p = poke.getPokemon(idOrName).toString();
+        return ResponseEntity.ok(p);
     }
 }

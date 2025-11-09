@@ -1,22 +1,23 @@
 package cr.ac.una.portalwebpokeapi.service;
 
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class RestCountriesService {
 
-    private final WebClient client = WebClient.builder()
-            .baseUrl("https://restcountries.com/v3.1")
-            .build();
+    private final RestTemplate rt = new RestTemplate();
+    private static final String BASE = "https://restcountries.com/v3.1";
 
-    public Mono<String> listAllCountries() {
-        return client.get()
-                .uri("/all?fields=name,cca2,cca3,flags,region,subregion")
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToMono(String.class);
+    @SuppressWarnings("unchecked")
+    public List<Map<String,Object>> listAllCountries() {
+        String url = BASE + "/all?fields=name,cca2,cca3,flags,region,subregion";
+        ResponseEntity<Map[]> res = rt.getForEntity(url, Map[].class);
+        return res.getBody() == null ? List.of() : Arrays.asList(res.getBody());
     }
 }

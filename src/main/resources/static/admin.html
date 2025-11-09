@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Administración</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="theme-light">
+<header class="app-header">
+    <div class="logo-area">
+        <h1>Panel Admin</h1>
+        <button id="themeToggle" class="btn small">🌓</button>
+    </div>
+    <nav class="main-nav">
+        <a href="index.html">Inicio</a>
+        <a href="catalog.html">Catálogo</a>
+        <a href="Cart.html">Carrito</a>
+        <a href="countries.html">Países</a>
+        <a href="admin.html" class="active">Admin</a>
+        <a href="login.html" id="loginLink">Login</a>
+        <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
+    </nav>
+</header>
+<main class="content">
+    <section class="panel">
+        <h2>Timeout de Sesión</h2>
+        <form id="timeoutForm" class="inline-form">
+            <label>Segundos
+                <input type="number" name="timeoutSeconds" id="timeoutSeconds" value="600" min="10">
+            </label>
+            <button class="btn primary" type="submit">Actualizar</button>
+        </form>
+        <p id="timeoutInfo">Actual: —</p>
+    </section>
+
+    <section class="panel">
+        <h2>Auditoría de Logins</h2>
+        <button id="loadAuditsBtn" class="btn">Cargar Auditoría</button>
+        <table class="audit-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>UserId</th>
+                <th>Username</th>
+                <th>Acción</th>
+                <th>Timestamp</th>
+            </tr>
+            </thead>
+            <tbody id="auditsBody"></tbody>
+        </table>
+    </section>
+
+    <section class="panel">
+        <h2>CRUD de Productos</h2>
+        <form id="productForm" class="form-grid">
+            <input type="hidden" name="id" id="prodId">
+            <label>Nombre
+                <input name="name" id="prodName" required>
+            </label>
+            <label>Precio
+                <input name="price" id="prodPrice" type="number" step="0.01" min="0" required>
+            </label>
+            <label>Categoría
+                <select name="category" id="prodCategory">
+                    <option value="COMICS">COMICS</option>
+                    <option value="FIGURAS">FIGURAS</option>
+                    <option value="EVENTOS">EVENTOS</option>
+                    <option value="SERIES">SERIES</option>
+                </select>
+            </label>
+            <label>Imagen URL
+                <input name="imageUrl" id="prodImage">
+            </label>
+            <label>Descripción
+                <textarea name="description" id="prodDesc" rows="2"></textarea>
+            </label>
+            <button class="btn success" type="submit">Guardar</button>
+            <button type="button" class="btn outline" id="resetProdBtn">Limpiar</button>
+        </form>
+
+        <div class="responsive-grid" id="adminProductsGrid"></div>
+    </section>
+</main>
+<footer class="app-footer">
+    <small>Panel administrativo - sólo usuarios con rol ADMIN</small>
+</footer>
+<div id="toastContainer" class="toast-container"></div>
+<script src="/js/util.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/session.js"></script>
+<script src="/js/admin.js"></script>
+<script>
+    initThemeToggle();
+    initAdminPage();
+</script>
+</body>
+</html>

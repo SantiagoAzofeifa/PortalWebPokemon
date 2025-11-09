@@ -6,8 +6,7 @@ import cr.ac.una.portalwebpokeapi.model.User;
 import cr.ac.una.portalwebpokeapi.model.UserRole;
 import cr.ac.una.portalwebpokeapi.repository.LoginAuditRepository;
 import cr.ac.una.portalwebpokeapi.repository.UserRepository;
-
-import org.springframework.beans.factory.annotation.Value;
+import cr.ac.una.portalwebpokeapi.service.SessionConfigService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
@@ -22,14 +21,13 @@ public class AuthController {
     private final UserRepository users;
     private final LoginAuditRepository audits;
     private final SessionManager sessions;
+    private final SessionConfigService sessionCfg;
 
-    @Value("${app.session.timeout-seconds}")
-    private long sessionSeconds;
-
-    public AuthController(UserRepository users, LoginAuditRepository audits, SessionManager sessions) {
+    public AuthController(UserRepository users, LoginAuditRepository audits, SessionManager sessions, SessionConfigService sessionCfg) {
         this.users = users;
         this.audits = audits;
         this.sessions = sessions;
+        this.sessionCfg = sessionCfg;
     }
 
     public record RegisterReq(String username,String password, String role) {}
@@ -37,6 +35,8 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterReq req) {
+        if (req.username()==null || req.username().isBlank() || req.password()==null || req.password().isBlank())
+            return ResponseEntity.badRequest().body(Map.of("error","Usuario y contraseña requeridos"));
         if (users.existsByUsername(req.username())) {
             return ResponseEntity.badRequest().body(Map.of("error","Usuario ya existe"));
         }
@@ -54,9 +54,10 @@ public class AuthController {
         if (u == null || !u.isActive() || !BCrypt.checkpw(req.password(), u.getPasswordHash())) {
             return ResponseEntity.status(401).body(Map.of("error","Credenciales inválidas"));
         }
+        int ttl = sessionCfg.currentTimeoutSeconds();
         String token = sessions.create(String.valueOf(u.getId()), u.getUsername(), u.getRole().name());
-        audits.save(audit(u, "LOGIN"));
-        return ResponseEntity.ok(Map.of("token", token, "username", u.getUsername(), "role", u.getRole().name(), "expiresIn", sessionSeconds));
+        audits.save(audit(u.getId(), u.getUsername(), "LOGIN"));
+        return ResponseEntity.ok(Map.of("token", token, "username", u.getUsername(), "role", u.getRole().name(), "expiresIn", ttl));
     }
 
     @PostMapping("/logout")
@@ -71,8 +72,9 @@ public class AuthController {
 
     @PostMapping("/renew")
     public ResponseEntity<?> renew(@RequestHeader("X-SESSION-TOKEN") String token) {
-        boolean ok = sessions.renew(token, sessionSeconds);
-        return ok ? ResponseEntity.ok(Map.of("ok",true, "expiresIn", sessionSeconds))
+        int ttl = sessionCfg.currentTimeoutSeconds();
+        boolean ok = sessions.renew(token, ttl);
+        return ok ? ResponseEntity.ok(Map.of("ok",true, "expiresIn", ttl))
                 : ResponseEntity.status(401).body(Map.of("error","Sesión expirada"));
     }
 
@@ -81,10 +83,6 @@ public class AuthController {
         var data = sessions.get(token);
         if (data == null) return ResponseEntity.status(401).body(Map.of("error","No autenticado"));
         return ResponseEntity.ok(Map.of("userId", data.userId, "username", data.username, "role", data.role, "expiresAt", data.getExpiresAt().toString()));
-    }
-
-    private LoginAudit audit(User u, String action) {
-        return audit(u.getId(), u.getUsername(), action);
     }
 
     private LoginAudit audit(Long userId, String username, String action) {

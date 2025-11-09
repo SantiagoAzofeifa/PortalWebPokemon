@@ -1,6 +1,5 @@
 package cr.ac.una.portalwebpokeapi.model;
 
-
 import jakarta.persistence.*;
 
 @Entity
@@ -23,16 +22,33 @@ public class Product {
     private Double price;
 
     @Column(length=120)
-    private String countryOfOrigin; // Código/Nombre país de construcción
+    private String countryOfOrigin;
 
     @Column(length=255)
-    private String availableCountriesCsv; // lista de países donde está disponible
+    private String availableCountriesCsv;
 
     @Column(length=255)
-    private String bannedCountriesCsv; // países donde no se permite vender
+    private String bannedCountriesCsv;
 
     @Column(length=500)
     private String description;
 
-    // getters/setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
+    public String getCountryOfOrigin() { return countryOfOrigin; }
+    public void setCountryOfOrigin(String countryOfOrigin) { this.countryOfOrigin = countryOfOrigin; }
+    public String getAvailableCountriesCsv() { return availableCountriesCsv; }
+    public void setAvailableCountriesCsv(String availableCountriesCsv) { this.availableCountriesCsv = availableCountriesCsv; }
+    public String getBannedCountriesCsv() { return bannedCountriesCsv; }
+    public void setBannedCountriesCsv(String bannedCountriesCsv) { this.bannedCountriesCsv = bannedCountriesCsv; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 }

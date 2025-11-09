@@ -1,4 +1,3 @@
-/*
 package cr.ac.una.portalwebpokeapi.config;
 
 import org.springframework.stereotype.Component;
@@ -30,4 +29,3 @@ public class PokeApiClient {
         return rest.getForObject(BASE + "/generation", Map.class);
     }
 }
-*/

@@ -1,3 +1,4 @@
+/*
 package cr.ac.una.portalwebpokeapi.config;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -27,4 +28,4 @@ public class WebConfig {
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
-}
+}*/

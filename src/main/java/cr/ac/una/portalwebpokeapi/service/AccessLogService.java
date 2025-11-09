@@ -5,19 +5,15 @@ import cr.ac.una.portalwebpokeapi.repository.AccessLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-
 @Service
 @RequiredArgsConstructor
 public class AccessLogService {
     private final AccessLogRepository repo;
 
     public void log(Long userId, AccessLog.Type type, String ip) {
-        repo.save(AccessLog.builder()
-                .userId(userId)
-                .type(type)
-                .ip(ip)
-                .at(Instant.now())
-                .build());
+        AccessLog entry = (type == AccessLog.Type.LOGIN)
+                ? AccessLog.login(userId, ip)
+                : AccessLog.logout(userId, ip);
+        repo.save(entry);
     }
 }

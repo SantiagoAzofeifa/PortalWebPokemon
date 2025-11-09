@@ -3,46 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <title>Login / Registro</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
-<h2>Registro</h2>
-<input id="r-username" placeholder="Usuario" />
-<input id="r-password" type="password" placeholder="Contraseña" />
-<select id="r-role">
-    <option value="USER">USER</option>
-    <option value="ADMIN">ADMIN</option>
-</select>
-<button id="btn-register">Registrar</button>
+<body class="theme-light">
+<header class="app-header">
+    <div class="logo-area">
+        <h1>Autenticación</h1>
+        <button id="themeToggle" class="btn small">🌓</button>
+    </div>
+    <nav class="main-nav">
+        <a href="index.html">Inicio</a>
+        <a href="catalog.html">Catálogo</a>
+        <a href="Cart.html">Carrito</a>
+        <a href="countries.html">Países</a>
+        <a href="admin.html" data-requires-role="ADMIN">Admin</a>
+    </nav>
+</header>
+<main class="content narrow">
+    <section class="panel">
+        <h2>Registro</h2>
+        <form id="registerForm" class="form-grid" autocomplete="off">
+            <label>Usuario
+                <input name="username" required minlength="3">
+            </label>
+            <label>Contraseña
+                <input type="password" name="password" required minlength="4">
+            </label>
+            <label>Rol
+                <select name="role">
+                    <option value="USER">Usuario</option>
+                    <option value="ADMIN">Administrador</option>
+                </select>
+            </label>
+            <button class="btn primary" type="submit">Registrar</button>
+        </form>
+    </section>
 
-<h2>Login</h2>
-<input id="l-username" placeholder="Usuario" />
-<input id="l-password" type="password" placeholder="Contraseña" />
-<button id="btn-login">Entrar</button>
-
-<pre id="out"></pre>
-
+    <section class="panel">
+        <h2>Login</h2>
+        <form id="loginForm" class="form-grid" autocomplete="off">
+            <label>Usuario
+                <input name="username" required>
+            </label>
+            <label>Contraseña
+                <input type="password" name="password" required>
+            </label>
+            <button class="btn success" type="submit">Ingresar</button>
+        </form>
+        <button id="renewBtn" class="btn outline hidden">Renovar Sesión Manualmente</button>
+        <pre id="authOutput" class="code-block" aria-live="polite"></pre>
+    </section>
+</main>
+<footer class="app-footer">
+    <small>&copy; 2025 Portal PokeVentas</small>
+</footer>
+<div id="toastContainer" class="toast-container"></div>
+<script src="/js/util.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/session.js"></script>
+<script src="/js/auth.js"></script>
 <script>
-    const out = document.getElementById('out');
-    document.getElementById('btn-register').onclick = async () => {
-        const username = document.getElementById('r-username').value.trim();
-        const password = document.getElementById('r-password').value.trim();
-        const role = document.getElementById('r-role').value;
-        const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username,password,role})});
-        out.textContent = await res.text();
-    };
-    document.getElementById('btn-login').onclick = async () => {
-        const username = document.getElementById('l-username').value.trim();
-        const password = document.getElementById('l-password').value.trim();
-        const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username,password})});
-        const data = await res.json();
-        if (res.ok) {
-            localStorage.setItem('sessionToken', data.token);
-            out.textContent = 'Login OK. Token guardado.';
-        } else {
-            out.textContent = JSON.stringify(data);
-        }
-    };
+    initThemeToggle();
+    initAuthForms();
 </script>
 </body>
 </html>
