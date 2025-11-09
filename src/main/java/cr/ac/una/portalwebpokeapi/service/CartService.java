@@ -26,19 +26,39 @@ public class CartService {
     }
 
     @Transactional
-    public void addPokemon(Long userId, String nameOrId, int qty) {
+    public void addCatalog(Long userId, String category, String nameOrId, int qty) {
         if (qty < 1) qty = 1;
+        String cat = (category==null? "POKEMON" : category.trim().toUpperCase());
         Cart cart = getOrCreate(userId);
-        // Siempre llamar en minúscula (PokeAPI es case insensitive en mayoría de endpoints pero evitamos sorpresas)
-        Map<String,Object> detail = poke.getPokemon(nameOrId.toLowerCase());
-        if (detail == null || detail.get("id") == null)
-            throw new IllegalArgumentException("Pokémon no encontrado");
 
-        Long pid = ((Number)detail.get("id")).longValue();
-        double price = PokeCatalogService.priceFromDetail(detail);
+        Long pid;
+        double price;
 
+        switch (cat) {
+            case "POKEMON" -> {
+                Map<String,Object> detail = poke.getPokemon(nameOrId.toLowerCase());
+                if (detail == null || detail.get("id") == null) throw new IllegalArgumentException("Pokémon no encontrado");
+                pid = ((Number)detail.get("id")).longValue();
+                price = PokeCatalogService.priceFromPokemonDetail(detail);
+            }
+            case "ITEM" -> {
+                Map<String,Object> detail = poke.getItem(nameOrId.toLowerCase());
+                if (detail == null || detail.get("id") == null) throw new IllegalArgumentException("Item no encontrado");
+                pid = ((Number)detail.get("id")).longValue();
+                price = PokeCatalogService.priceFromItemDetail(detail);
+            }
+            case "GAME" -> {
+                Map<String,Object> detail = poke.getVersion(nameOrId.toLowerCase());
+                if (detail == null || detail.get("id") == null) throw new IllegalArgumentException("Juego no encontrado");
+                pid = ((Number)detail.get("id")).longValue();
+                price = PokeCatalogService.priceFromVersion(detail);
+            }
+            default -> throw new IllegalArgumentException("Categoría inválida: " + category);
+        }
+
+        // Buscar existente por (productId + productCategory)
         CartItem existing = itemRepo.findByCartId(cart.getId()).stream()
-                .filter(ci -> ci.getProductId().equals(pid))
+                .filter(ci -> ci.getProductId().equals(pid) && cat.equals(ci.getProductCategory()))
                 .findFirst().orElse(null);
 
         if (existing != null) {
@@ -48,6 +68,7 @@ public class CartService {
             CartItem it = new CartItem();
             it.setCartId(cart.getId());
             it.setProductId(pid);
+            it.setProductCategory(cat);
             it.setQuantity(qty);
             it.setUnitPrice(price);
             itemRepo.save(it);
@@ -86,12 +107,31 @@ public class CartService {
         double total = 0d;
 
         for (CartItem ci : items) {
-            Map<String,Object> detail = poke.getPokemon(String.valueOf(ci.getProductId()));
-            String name = detail == null ? ("#" + ci.getProductId()) : String.valueOf(detail.get("name"));
-            String image = detail == null ? null : PokeCatalogService.spriteFromDetail(detail);
+            String cat = ci.getProductCategory();
+            String name = "#"+ci.getProductId();
+            String image = null;
+
+            try {
+                switch (cat) {
+                    case "POKEMON" -> {
+                        Map<String,Object> d = poke.getPokemon(String.valueOf(ci.getProductId()));
+                        if (d!=null) { name = String.valueOf(d.get("name")); image = PokeCatalogService.spriteFromPokemonDetail(d); }
+                    }
+                    case "ITEM" -> {
+                        Map<String,Object> d = poke.getItem(String.valueOf(ci.getProductId()));
+                        if (d!=null) { name = String.valueOf(d.get("name")); image = PokeCatalogService.imageFromItemDetail(d); }
+                    }
+                    case "GAME" -> {
+                        Map<String,Object> d = poke.getVersion(String.valueOf(ci.getProductId()));
+                        if (d!=null) { name = String.valueOf(d.get("name")); image = null; }
+                    }
+                }
+            } catch (Exception ignored) {}
+
             Map<String,Object> row = new LinkedHashMap<>();
             row.put("id", ci.getId());
             row.put("productId", ci.getProductId());
+            row.put("productCategory", ci.getProductCategory());
             row.put("name", name);
             row.put("image", image);
             row.put("quantity", ci.getQuantity());

@@ -9,12 +9,13 @@ function initCatalogPage() {
     const form = qs('#filterForm');
     const prev = qs('#prevPage');
     const next = qs('#nextPage');
+    const catSel = qs('#categorySelect');
     const typeSel = qs('#typeSelect');
-    let page=0, size=12, query='', type='';
+    const typeField = qs('#typeField');
 
+    // Poblar tipos
     if (typeSel && !typeSel.children.length) {
-        const opt0 = document.createElement('option');
-        opt0.value=''; opt0.textContent='(Todos los tipos)';
+        const opt0 = document.createElement('option'); opt0.value=''; opt0.textContent='(Todos)';
         typeSel.appendChild(opt0);
         TYPES.forEach(t=> {
             const o = document.createElement('option'); o.value=t; o.textContent=t;
@@ -22,14 +23,24 @@ function initCatalogPage() {
         });
     }
 
+    let page=0, size=12, query='', type='', category='ALL';
+
+    // Mostrar/ocultar selector de tipo según categoría
+    catSel.onchange = ()=>{
+        category = catSel.value;
+        typeField.style.display = category==='POKEMON' ? '' : 'none';
+    };
+
     form.onsubmit = e=>{
         e.preventDefault();
         query = (qs('#queryInput')?.value||'').trim();
         type = (typeSel?.value||'').trim();
         page = Number(qs('#pageInput').value||0);
         size = Number(qs('#sizeInput').value||12);
+        category = (catSel?.value||'ALL').trim();
         load();
     };
+
     prev.onclick = ()=> { if (page>0){ page--; qs('#pageInput').value=page; load(); } };
     next.onclick = ()=> { page++; qs('#pageInput').value=page; load(); };
 
@@ -37,15 +48,17 @@ function initCatalogPage() {
         grid.innerHTML = loaderHTML();
         try {
             const offset = page*size;
-            const url = `/api/catalog/pokemon-cards?limit=${size}&offset=${offset}` +
+            // Agregador
+            const url = `/api/catalog/cards?limit=${size}&offset=${offset}` +
                 (query? `&query=${encodeURIComponent(query)}`:'') +
-                (type? `&type=${encodeURIComponent(type)}`:'');
+                (category? `&category=${encodeURIComponent(category)}`:'') +
+                (category==='POKEMON' && type? `&type=${encodeURIComponent(type)}`:'');
             const rows = await API.get(url);
             grid.innerHTML = '';
             (rows||[]).forEach(card=> grid.appendChild(cardView(card)));
             pageInfo.textContent = `Página ${page+1} | Mostrando ${rows.length}`;
         } catch {
-            grid.innerHTML = errorHTML('Error cargando Pokémon');
+            grid.innerHTML = errorHTML('Error cargando catálogo');
         }
     }
     load();
@@ -53,26 +66,28 @@ function initCatalogPage() {
     function cardView(c) {
         const div = document.createElement('div');
         div.className='product-card';
+        const img = c.image || 'https://placehold.co/300x160?text=' + encodeURIComponent(c.kind);
+        const badges = (c.kind==='POKEMON' ? (c.types||[]) : [c.kind]).map(t=>`<span class="badge small">${escapeHTML(t)}</span>`).join(' ');
         div.innerHTML = `
-      <img src="${c.image||'https://placehold.co/300x160?text=No+image'}" alt="${escapeHTML(c.name)}">
+      <img src="${img}" alt="${escapeHTML(c.name)}">
       <div class="body">
         <h3>${escapeHTML(cap(c.name))}</h3>
-        <div class="flex-row">${(c.types||[]).map(t=>`<span class="badge small">${t}</span>`).join(' ')}</div>
+        <div class="flex-row">${badges}</div>
         <span class="price">${formatMoney(c.price)}</span>
         <div class="flex-row">
-          <button class="btn small primary" data-name="${c.name}">Agregar</button>
+          <button class="btn small primary" data-name="${c.name}" data-kind="${c.kind}">Agregar</button>
         </div>
       </div>
     `;
-        div.querySelector('button').onclick = ()=> addToCart(c.name);
+        div.querySelector('button').onclick = (e)=> addToCart(e.target.getAttribute('data-kind'), c.name);
         return div;
     }
 
-    async function addToCart(name) {
+    async function addToCart(kind, name) {
         if (!API.token()) { showToast('Inicia sesión','error'); return; }
         try {
-            await API.post('/api/cart/pokemon', { nameOrId: name, quantity: 1 });
-            showToast(`${cap(name)} agregado al carrito`,'success');
+            await API.post('/api/cart/catalog', { category: kind, nameOrId: name, quantity: 1 });
+            showToast(`${cap(name)} (${kind}) agregado al carrito`,'success');
         } catch {}
     }
 

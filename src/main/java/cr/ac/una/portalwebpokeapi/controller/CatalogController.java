@@ -22,11 +22,36 @@ public class CatalogController {
         return ResponseEntity.ok(countries.listAll());
     }
 
+    // Tarjetas por categoría específica
     @GetMapping("/pokemon-cards")
     public ResponseEntity<?> pokemonCards(@RequestParam(required=false) Integer limit,
                                           @RequestParam(required=false) Integer offset,
                                           @RequestParam(required=false) String query,
                                           @RequestParam(required=false) String type) {
-        return ResponseEntity.ok(catalog.listCards(limit, offset, query, type));
+        return ResponseEntity.ok(catalog.listPokemonCards(limit, offset, query, type));
+    }
+
+    @GetMapping("/item-cards")
+    public ResponseEntity<?> itemCards(@RequestParam(required=false) Integer limit,
+                                       @RequestParam(required=false) Integer offset,
+                                       @RequestParam(required=false) String query) {
+        return ResponseEntity.ok(catalog.listItemCards(limit, offset, query));
+    }
+
+    @GetMapping("/game-cards")
+    public ResponseEntity<?> gameCards(@RequestParam(required=false) Integer limit,
+                                       @RequestParam(required=false) Integer offset,
+                                       @RequestParam(required=false) String query) {
+        return ResponseEntity.ok(catalog.listGameCards(limit, offset, query));
+    }
+
+    // Agregador: ALL | POKEMON | ITEM | GAME
+    @GetMapping("/cards")
+    public ResponseEntity<?> unifiedCards(@RequestParam(required=false) Integer limit,
+                                          @RequestParam(required=false) Integer offset,
+                                          @RequestParam(required=false) String query,
+                                          @RequestParam(required=false) String type,
+                                          @RequestParam(required=false, defaultValue = "ALL") String category) {
+        return ResponseEntity.ok(catalog.listUnifiedCards(limit, offset, query, type, category));
     }
 }

@@ -15,7 +15,10 @@ public class CartItem {
     private Long cartId;
 
     @Column(nullable=false)
-    private Long productId; // ahora representa el id del Pokémon (no FK)
+    private Long productId; // id numérico (pokemon/item/version)
+
+    @Column(nullable=false, length=20)
+    private String productCategory = "POKEMON"; // POKEMON | ITEM | GAME
 
     @Column(nullable=false)
     private int quantity;

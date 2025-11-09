@@ -4,8 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Getter @Setter
 @Entity @Table(name="order_items")
 public class OrderItem {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,7 +14,10 @@ public class OrderItem {
     private Long orderId;
 
     @Column(nullable=false)
-    private Long productId; // id numérico del Pokémon
+    private Long productId;
+
+    @Column(nullable=false, length=20)
+    private String productCategory = "POKEMON"; // POKEMON | ITEM | GAME
 
     @Column(nullable=false)
     private int quantity;

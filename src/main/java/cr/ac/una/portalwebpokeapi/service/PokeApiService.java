@@ -4,7 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class PokeApiService {
@@ -25,24 +26,33 @@ public class PokeApiService {
         return res.getBody();
     }
 
+    // Item catalog
     @SuppressWarnings("unchecked")
-    public List<Map<String,Object>> listByType(String typeName) {
-        String url = BASE + "/type/" + typeName;
+    public Map<String,Object> listItems(int limit, int offset) {
+        String url = BASE + "/item?limit=" + limit + "&offset=" + offset;
         ResponseEntity<Map> res = rt.getForEntity(url, Map.class);
-        Map<String,Object> body = res.getBody();
-        if (body == null) return List.of();
-        List<Map<String,Object>> arr = (List<Map<String,Object>>) body.get("pokemon");
-        if (arr == null) return List.of();
-        List<Map<String,Object>> out = new ArrayList<>();
-        for (Map<String,Object> row : arr) {
-            Object p = row.get("pokemon");
-            if (p instanceof Map<?,?> pm) {
-                Map<String,Object> m = new LinkedHashMap<>();
-                m.put("name", pm.get("name"));
-                m.put("url", pm.get("url"));
-                out.add(m);
-            }
-        }
-        return out;
+        return res.getBody();
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String,Object> getItem(String nameOrId) {
+        String url = BASE + "/item/" + nameOrId;
+        ResponseEntity<Map> res = rt.getForEntity(url, Map.class);
+        return res.getBody();
+    }
+
+    // "Games" usaremos 'version' como catálogo de juegos
+    @SuppressWarnings("unchecked")
+    public Map<String,Object> listVersions(int limit, int offset) {
+        String url = BASE + "/version?limit=" + limit + "&offset=" + offset;
+        ResponseEntity<Map> res = rt.getForEntity(url, Map.class);
+        return res.getBody();
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String,Object> getVersion(String nameOrId) {
+        String url = BASE + "/version/" + nameOrId;
+        ResponseEntity<Map> res = rt.getForEntity(url, Map.class);
+        return res.getBody();
     }
 }

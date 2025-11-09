@@ -32,9 +32,9 @@ async function loadCart() {
             const tr = document.createElement('tr');
             tr.innerHTML = `
         <td style="display:flex;gap:.6rem;align-items:center;">
-          <img src="${it.image||'https://placehold.co/56x56?text=?'}" alt="${escapeHTML(it.name||'')}" style="width:56px;height:56px;object-fit:contain;border-radius:6px;">
+          <img src="${it.image||'https://placehold.co/56x56?text=' + encodeURIComponent(it.productCategory||'?')}" alt="${escapeHTML(it.name||'')}" style="width:56px;height:56px;object-fit:contain;border-radius:6px;">
           <div>
-            <div><strong>${escapeHTML((it.name||('#'+it.productId)))}</strong></div>
+            <div><strong>${escapeHTML((it.name||('#'+it.productId)))}</strong> <span class="badge small">${escapeHTML(it.productCategory||'')}</span></div>
             <small>ID: ${it.productId}</small>
           </div>
         </td>

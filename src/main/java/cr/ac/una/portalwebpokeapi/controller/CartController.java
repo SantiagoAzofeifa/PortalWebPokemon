@@ -28,14 +28,16 @@ public class CartController {
         return ResponseEntity.ok(cartService.view(requireUser(token)));
     }
 
-    public record AddPokemonReq(String nameOrId, Integer quantity){}
+    public record AddCatalogReq(String category, String nameOrId, Integer quantity){}
 
-    @PostMapping("/pokemon")
-    public ResponseEntity<?> addPokemon(@RequestHeader("X-SESSION-TOKEN") String token,
-                                        @RequestBody AddPokemonReq req) {
+    @PostMapping("/catalog")
+    public ResponseEntity<?> addCatalog(@RequestHeader("X-SESSION-TOKEN") String token,
+                                        @RequestBody AddCatalogReq req) {
         if (req.nameOrId()==null || req.nameOrId().isBlank())
             return ResponseEntity.badRequest().body(Map.of("error","nameOrId requerido"));
-        cartService.addPokemon(requireUser(token), req.nameOrId(), req.quantity()==null?1:req.quantity());
+        cartService.addCatalog(requireUser(token),
+                req.category()==null? "POKEMON" : req.category(),
+                req.nameOrId(), req.quantity()==null?1:req.quantity());
         return ResponseEntity.ok(Map.of("ok",true));
     }
 

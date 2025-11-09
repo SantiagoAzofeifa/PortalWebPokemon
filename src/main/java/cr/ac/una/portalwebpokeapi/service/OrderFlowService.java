@@ -87,6 +87,7 @@ public class OrderFlowService {
             OrderItem oi = new OrderItem();
             oi.setOrderId(saved.getId());
             oi.setProductId(ci.getProductId());
+            oi.setProductCategory(ci.getProductCategory()); // NUEVO
             oi.setQuantity(ci.getQuantity());
             oi.setUnitPrice(ci.getUnitPrice());
             System.out.println("[S-CHK] Guardando order_item -> productId=" + oi.getProductId() + " qty=" + oi.getQuantity());

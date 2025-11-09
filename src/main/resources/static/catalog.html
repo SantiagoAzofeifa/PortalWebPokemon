@@ -2,15 +2,16 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Catálogo Pokémon</title>
+    <title>Catálogo Unificado</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/logo.css">
 </head>
 <body class="theme-light">
 <header class="app-header">
     <div class="logo-bar">
-        <h1>Catálogo Pokémon</h1>
-        <button id="themeToggle" class="btn small">🌓</button>
+        <h1>Catálogo</h1>
+        <img class="site-logo" src="images/International_Pokémon_logo.svg.png" alt="logo">
     </div>
     <nav class="main-nav">
         <a href="index.html">Inicio</a>
@@ -27,13 +28,21 @@
 </header>
 <main class="content">
     <section class="panel">
-        <h2>Explorar y comprar Pokémon</h2>
+        <h2>Explorar y comprar</h2>
         <form id="filterForm" class="inline-form">
-            <label class="form-field">Buscar
-                <input id="queryInput" placeholder="pikachu, char, ...">
+            <label class="form-field">Categoría
+                <select id="categorySelect">
+                    <option value="ALL">(Todas)</option>
+                    <option value="POKEMON">Pokémon</option>
+                    <option value="ITEM">Items</option>
+                    <option value="GAME">Games</option>
+                </select>
             </label>
-            <label class="form-field">Tipo
+            <label class="form-field" id="typeField" style="display:none;">Tipo (solo Pokémon)
                 <select id="typeSelect"></select>
+            </label>
+            <label class="form-field">Buscar
+                <input id="queryInput" placeholder="pikachu, potion, red, ...">
             </label>
             <label class="form-field">Página
                 <input id="pageInput" type="number" min="0" value="0">
@@ -51,7 +60,7 @@
         </div>
     </section>
 </main>
-<footer class="footer">Catálogo dinámico desde PokeAPI</footer>
+<footer class="footer">Catálogo unificado (Pokémon, Items, Games)</footer>
 <div id="toastContainer" class="toast-container"></div>
 <script type="module">
     import { initTheme } from './js/util.js';
