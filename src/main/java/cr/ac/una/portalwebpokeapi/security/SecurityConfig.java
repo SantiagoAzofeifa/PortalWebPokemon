@@ -23,7 +23,7 @@ public class SecurityConfig {
                                 "/login.html",
                                 "/catalog.html",
                                 "/countries.html",
-                                "/cart.html",
+                                "/Cart.html",
                                 "/admin.html",
                                 "/order*.html",
                                 "/api/auth/**",
