@@ -13,52 +13,70 @@
         <h1>Acceso</h1>
         <img class="site-logo" src="images/International_Pokémon_logo.svg.png" alt="logo">
     </div>
-    <nav class="main-nav">
+    <nav class="main-nav" aria-label="Navegación principal">
         <a href="index.html">Inicio</a>
         <a href="catalog.html">Catálogo</a>
         <a href="Cart.html">Carrito</a>
         <a href="admin.html" data-requires-role="ADMIN">Admin</a>
     </nav>
 </header>
+
 <main class="content narrow">
+    <!-- Sección de Registro -->
     <section class="panel">
         <h2>Registro</h2>
-        <form id="registerForm" class="form-grid" autocomplete="off">
-            <label class="form-field">Usuario
-                <input name="username" required minlength="3">
-            </label>
-            <label class="form-field">Contraseña
-                <input type="password" name="password" required minlength="4">
-            </label>
-            <label class="form-field">Rol
-                <select name="role">
+        <form id="registerForm" class="form-rows" autocomplete="off">
+            <div class="form-row">
+                <label for="reg-username">Usuario</label>
+                <input id="reg-username" name="username" required minlength="3">
+            </div>
+            <div class="form-row">
+                <label for="reg-password">Contraseña</label>
+                <input id="reg-password" type="password" name="password" required minlength="4">
+            </div>
+            <div class="form-row">
+                <label for="reg-role">Rol</label>
+                <select id="reg-role" name="role">
                     <option value="USER">USER</option>
                     <option value="ADMIN">ADMIN</option>
                 </select>
-            </label>
-            <button class="btn success" type="submit">Registrar</button>
+            </div>
+            <div class="form-actions">
+                <button class="btn success" type="submit">Registrar</button>
+                <button type="reset" class="btn outline">Limpiar</button>
+            </div>
         </form>
     </section>
 
+    <!-- Sección de Login -->
     <section class="panel">
         <h2>Login</h2>
-        <form id="loginForm" class="form-grid" autocomplete="off">
-            <label class="form-field">Usuario
-                <input name="username" required>
-            </label>
-            <label class="form-field">Contraseña
-                <input type="password" name="password" required>
-            </label>
-            <button class="btn primary" type="submit">Ingresar</button>
+        <form id="loginForm" class="form-rows" autocomplete="off">
+            <div class="form-row">
+                <label for="log-username">Usuario</label>
+                <input id="log-username" name="username" required>
+            </div>
+            <div class="form-row">
+                <label for="log-password">Contraseña</label>
+                <input id="log-password" type="password" name="password" required>
+            </div>
+            <div class="form-actions">
+                <button class="btn primary" type="submit">Ingresar</button>
+                <button type="reset" class="btn outline">Limpiar</button>
+            </div>
         </form>
-        <div class="flex-row" style="margin-top:.6rem;">
+
+        <div class="flex-row" style="justify-content:center; margin-top:1rem;">
             <button id="renewBtn" class="btn outline hidden">Renovar Sesión</button>
         </div>
+
         <pre id="authOutput" class="code-block" style="margin-top:.9rem;" aria-live="polite"></pre>
     </section>
 </main>
+
 <footer class="footer">&copy; 2025 Portal PokeVentas</footer>
 <div id="toastContainer" class="toast-container"></div>
+
 <script type="module">
     import { initTheme } from './js/util.js';
     import { hydrateSessionUI } from './js/session.js';
