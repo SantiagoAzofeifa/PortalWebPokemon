@@ -2,22 +2,22 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Catálogo</title>
+    <title>Catálogo Pokémon</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="theme-light">
 <header class="app-header">
     <div class="logo-bar">
-        <h1>Catálogo</h1>
+        <h1>Catálogo Pokémon</h1>
         <button id="themeToggle" class="btn small">🌓</button>
     </div>
     <nav class="main-nav">
         <a href="index.html">Inicio</a>
         <a href="catalog.html" class="active">Catálogo</a>
-        <a href="Cart.html">Carrito</a>
+        <a href="cart.html">Carrito</a>
         <a href="countries.html">Países</a>
-        <a href="order-create.html">Crear Pedido</a>
+        <a href="order-list.html">Mis Pedidos</a>
         <a href="admin.html" data-requires-role="ADMIN">Admin</a>
         <a href="login.html" id="loginLink">Login</a>
         <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
@@ -25,15 +25,13 @@
 </header>
 <main class="content">
     <section class="panel">
-        <h2>Productos por Categoría</h2>
+        <h2>Explorar y comprar Pokémon</h2>
         <form id="filterForm" class="inline-form">
-            <label class="form-field">Categoría
-                <select id="categorySelect">
-                    <option value="COMICS">Comics</option>
-                    <option value="FIGURAS">Figuras</option>
-                    <option value="EVENTOS">Eventos</option>
-                    <option value="SERIES">Series</option>
-                </select>
+            <label class="form-field">Buscar
+                <input id="queryInput" placeholder="pikachu, char, ...">
+            </label>
+            <label class="form-field">Tipo
+                <select id="typeSelect"></select>
             </label>
             <label class="form-field">Página
                 <input id="pageInput" type="number" min="0" value="0">
@@ -41,7 +39,7 @@
             <label class="form-field">Size
                 <input id="sizeInput" type="number" min="1" max="50" value="12">
             </label>
-            <button class="btn primary" type="submit">Cargar</button>
+            <button class="btn primary" type="submit">Filtrar</button>
         </form>
         <div id="productsGrid" class="grid responsive" aria-live="polite"></div>
         <div class="flex-row" style="margin-top:.6rem;">
@@ -50,22 +48,8 @@
             <button id="nextPage" class="btn small outline">Siguiente</button>
         </div>
     </section>
-
-    <section class="panel">
-        <h2>Semillas PokeAPI (Listado Pokémon)</h2>
-        <form id="pokeForm" class="inline-form">
-            <label class="form-field">Limit
-                <input name="limit" type="number" value="10" min="1" max="100">
-            </label>
-            <label class="form-field">Offset
-                <input name="offset" type="number" value="0" min="0">
-            </label>
-            <button class="btn" type="submit">Listar</button>
-        </form>
-        <div id="pokeList" class="grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr));"></div>
-    </section>
 </main>
-<footer class="footer">Catálogo dinámico.</footer>
+<footer class="footer">Catálogo dinámico desde PokeAPI</footer>
 <div id="toastContainer" class="toast-container"></div>
 <script type="module">
     import { initTheme } from './js/util.js';

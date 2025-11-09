@@ -15,7 +15,7 @@ public class OrderItem {
     private Long orderId;
 
     @Column(nullable=false)
-    private Long productId;
+    private Long productId; // id numérico del Pokémon
 
     @Column(nullable=false)
     private int quantity;

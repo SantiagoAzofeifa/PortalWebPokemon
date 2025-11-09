@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@RestController @RequestMapping("/api/cart")
+@RestController
+@RequestMapping("/api/cart")
 public class CartController {
     private final CartService cartService;
     private final SessionManager sessions;
@@ -27,17 +28,20 @@ public class CartController {
         return ResponseEntity.ok(cartService.view(requireUser(token)));
     }
 
-    public record AddItemReq(Long productId, Integer quantity){}
+    public record AddPokemonReq(String nameOrId, Integer quantity){}
 
-    @PostMapping("/items")
-    public ResponseEntity<?> add(@RequestHeader("X-SESSION-TOKEN") String token,@RequestBody AddItemReq req){
-        if (req.productId()==null) return ResponseEntity.badRequest().body(Map.of("error","productId requerido"));
-        cartService.addItem(requireUser(token), req.productId(), req.quantity()==null?1:req.quantity());
+    @PostMapping("/pokemon")
+    public ResponseEntity<?> addPokemon(@RequestHeader("X-SESSION-TOKEN") String token,
+                                        @RequestBody AddPokemonReq req) {
+        if (req.nameOrId()==null || req.nameOrId().isBlank())
+            return ResponseEntity.badRequest().body(Map.of("error","nameOrId requerido"));
+        cartService.addPokemon(requireUser(token), req.nameOrId(), req.quantity()==null?1:req.quantity());
         return ResponseEntity.ok(Map.of("ok",true));
     }
 
     @PutMapping("/items/{id}")
-    public ResponseEntity<?> update(@RequestHeader("X-SESSION-TOKEN") String token,@PathVariable Long id,@RequestBody Map<String,Integer> body){
+    public ResponseEntity<?> update(@RequestHeader("X-SESSION-TOKEN") String token,@PathVariable Long id,
+                                    @RequestBody Map<String,Integer> body){
         int qty = Math.max(1, body.getOrDefault("quantity",1));
         cartService.updateQty(requireUser(token), id, qty);
         return ResponseEntity.ok(Map.of("ok",true));

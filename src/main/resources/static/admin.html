@@ -15,7 +15,7 @@
     <nav class="main-nav">
         <a href="index.html">Inicio</a>
         <a href="catalog.html">Catálogo</a>
-        <a href="cart.html">Carrito</a>
+        <a href="Cart.html">Carrito</a>
         <a href="countries.html">Países</a>
         <a href="order-create.html">Crear Pedido</a>
         <a href="admin.html" class="active" data-requires-role="ADMIN">Admin</a>
@@ -65,14 +65,14 @@
             </label>
             <label class="form-field">Categoría
                 <select name="category" id="prodCategory">
-                    <option value="COMICS">COMICS</option>
-                    <option value="FIGURAS">FIGURAS</option>
-                    <option value="EVENTOS">EVENTOS</option>
-                    <option value="SERIES">SERIES</option>
+                    <option value="POKEMON">POKEMON</option>
+                    <option value="SPECIES">SPECIES</option>
+                    <option value="ITEMS">ITEMS</option>
+                    <option value="GENERATIONS">GENERATIONS</option>
                 </select>
             </label>
             <label class="form-field">Imagen URL
-                <input name="imageUrl" id="prodImage">
+                <input name="imageUrl" id="prodImage" placeholder="https://...png">
             </label>
             <label class="form-field">Descripción
                 <textarea name="description" id="prodDesc" rows="2"></textarea>
@@ -81,10 +81,10 @@
                 <input name="countryOfOrigin">
             </label>
             <label class="form-field">Países Disponibles (CSV)
-                <input name="availableCountriesCsv">
+                <input name="availableCountriesCsv" placeholder="US,CA,MX">
             </label>
             <label class="form-field">Países Prohibidos (CSV)
-                <input name="bannedCountriesCsv">
+                <input name="bannedCountriesCsv" placeholder="CU,IR,...">
             </label>
             <div class="flex-row">
                 <button class="btn success" type="submit">Guardar</button>

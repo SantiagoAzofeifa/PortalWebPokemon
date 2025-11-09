@@ -1,6 +1,7 @@
-// products.js
 import API from './api.js';
 import { qs, showToast, formatMoney, escapeHTML } from './util.js';
+
+const TYPES = ['normal','fire','water','grass','electric','ice','fighting','poison','ground','flying','psychic','bug','rock','ghost','dragon','dark','steel','fairy'];
 
 function initCatalogPage() {
     const grid = qs('#productsGrid');
@@ -8,85 +9,76 @@ function initCatalogPage() {
     const form = qs('#filterForm');
     const prev = qs('#prevPage');
     const next = qs('#nextPage');
-    let page=0, size=12, category='COMICS';
+    const typeSel = qs('#typeSelect');
+    let page=0, size=12, query='', type='';
+
+    if (typeSel && !typeSel.children.length) {
+        const opt0 = document.createElement('option');
+        opt0.value=''; opt0.textContent='(Todos los tipos)';
+        typeSel.appendChild(opt0);
+        TYPES.forEach(t=> {
+            const o = document.createElement('option'); o.value=t; o.textContent=t;
+            typeSel.appendChild(o);
+        });
+    }
 
     form.onsubmit = e=>{
         e.preventDefault();
-        category = qs('#categorySelect').value;
+        query = (qs('#queryInput')?.value||'').trim();
+        type = (typeSel?.value||'').trim();
         page = Number(qs('#pageInput').value||0);
         size = Number(qs('#sizeInput').value||12);
-        loadProducts();
+        load();
     };
-    prev.onclick = ()=> { if (page>0){ page--; qs('#pageInput').value=page; loadProducts(); } };
-    next.onclick = ()=> { page++; qs('#pageInput').value=page; loadProducts(); };
+    prev.onclick = ()=> { if (page>0){ page--; qs('#pageInput').value=page; load(); } };
+    next.onclick = ()=> { page++; qs('#pageInput').value=page; load(); };
 
-    async function loadProducts() {
+    async function load() {
         grid.innerHTML = loaderHTML();
         try {
-            const data = await API.get(`/api/products?category=${category}&page=${page}&size=${size}`);
+            const offset = page*size;
+            const url = `/api/catalog/pokemon-cards?limit=${size}&offset=${offset}` +
+                (query? `&query=${encodeURIComponent(query)}`:'') +
+                (type? `&type=${encodeURIComponent(type)}`:'');
+            const rows = await API.get(url);
             grid.innerHTML = '';
-            data.content.forEach(p=> grid.appendChild(productCard(p)));
-            pageInfo.textContent = `Página ${page+1} | Total elementos: ${data.totalElements}`;
+            (rows||[]).forEach(card=> grid.appendChild(cardView(card)));
+            pageInfo.textContent = `Página ${page+1} | Mostrando ${rows.length}`;
         } catch {
-            grid.innerHTML = errorHTML('Error cargando productos');
+            grid.innerHTML = errorHTML('Error cargando Pokémon');
         }
     }
-    loadProducts();
+    load();
 
-    // Semillas PokeAPI
-    const pokeForm = qs('#pokeForm');
-    const pokeList = qs('#pokeList');
-    if (pokeForm && pokeList) {
-        pokeForm.onsubmit = async e=>{
-            e.preventDefault();
-            const fd = new FormData(pokeForm);
-            const limit = fd.get('limit');
-            const offset = fd.get('offset');
-            pokeList.innerHTML = loaderHTML();
-            try {
-                const raw = await API.get(`/api/catalog/poke/list?limit=${limit}&offset=${offset}`);
-                pokeList.innerHTML = '';
-                (raw.results||[]).forEach(r=>{
-                    const div = document.createElement('div');
-                    div.className='poke-item generic-card';
-                    div.style.padding='.6rem .7rem';
-                    div.innerHTML = `<strong>${r.name}</strong><small>${r.url}</small>`;
-                    pokeList.appendChild(div);
-                });
-            } catch {
-                pokeList.innerHTML = errorHTML('Error PokeAPI');
-            }
-        };
-    }
-
-    function productCard(p) {
+    function cardView(c) {
         const div = document.createElement('div');
         div.className='product-card';
         div.innerHTML = `
-      <img src="${p.imageUrl||'https://placehold.co/300x160?text=Producto'}" alt="${escapeHTML(p.name)}">
+      <img src="${c.image||'https://placehold.co/300x160?text=No+image'}" alt="${escapeHTML(c.name)}">
       <div class="body">
-        <h3>${escapeHTML(p.name)}</h3>
-        <p>${escapeHTML((p.description||'Sin descripción').slice(0,100))}</p>
-        <span class="price">${formatMoney(p.price)}</span>
+        <h3>${escapeHTML(cap(c.name))}</h3>
+        <div class="flex-row">${(c.types||[]).map(t=>`<span class="badge small">${t}</span>`).join(' ')}</div>
+        <span class="price">${formatMoney(c.price)}</span>
         <div class="flex-row">
-          <button class="btn small primary" data-id="${p.id}">Agregar</button>
+          <button class="btn small primary" data-name="${c.name}">Agregar</button>
         </div>
       </div>
     `;
-        div.querySelector('button').onclick = ()=> addToCart(p.id);
+        div.querySelector('button').onclick = ()=> addToCart(c.name);
         return div;
     }
 
-    async function addToCart(productId) {
+    async function addToCart(name) {
         if (!API.token()) { showToast('Inicia sesión','error'); return; }
         try {
-            await API.post('/api/cart/items',{ productId, quantity:1 });
-            showToast('Producto agregado','success');
+            await API.post('/api/cart/pokemon', { nameOrId: name, quantity: 1 });
+            showToast(`${cap(name)} agregado al carrito`,'success');
         } catch {}
     }
 
     function loaderHTML(){ return `<div class="generic-card" style="padding:1rem;text-align:center">Cargando...</div>`; }
     function errorHTML(m){ return `<div class="generic-card" style="padding:1rem;text-align:center;color:var(--danger)">${m}</div>`; }
+    function cap(s=''){ s=s.replace(/-/g,' '); return s.charAt(0).toUpperCase()+s.slice(1); }
 }
 
 async function loadCountriesPage() {
