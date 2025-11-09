@@ -5,14 +5,12 @@
     <title>Carrito</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/logo.css">
 </head>
 <body>
 <header class="app-header">
     <div class="logo-bar">
         <h1>Carrito</h1>
         <img class="site-logo" src="images/International_Pokémon_logo.svg.png" alt="logo">
-
     </div>
     <nav class="main-nav">
         <a href="index.html">Inicio</a>
@@ -25,10 +23,12 @@
         <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
     </nav>
 </header>
+
 <main class="content">
     <section class="panel">
         <h2>Tu Carrito</h2>
         <div id="cartStatus" class="status-line"></div>
+
         <table class="table" aria-describedby="cartTotal">
             <thead>
             <tr>
@@ -41,15 +41,19 @@
             </thead>
             <tbody id="cartBody"></tbody>
         </table>
-        <div class="flex-row" style="margin-top:.8rem;">
+
+        <div class="flex-row cart-actions">
             <strong id="cartTotal">Total: $0.00</strong>
             <button id="clearCartBtn" class="btn danger outline">Vaciar</button>
             <a class="btn primary" href="checkout.html">Procesar compra</a>
         </div>
     </section>
 </main>
+
 <footer class="footer">&copy; 2025 Portal PokeVentas</footer>
+
 <div id="toastContainer" class="toast-container"></div>
+
 <script type="module">
     import { initTheme } from './js/util.js';
     import { hydrateSessionUI } from './js/session.js';

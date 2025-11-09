@@ -5,7 +5,6 @@
     <title>Checkout</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/logo.css">
 </head>
 <body class="theme-light">
 <header class="app-header">
@@ -24,6 +23,7 @@
         <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
     </nav>
 </header>
+
 <main class="content narrow">
     <section class="panel">
         <h2>Datos del Cliente</h2>
@@ -53,8 +53,10 @@
         </form>
     </section>
 </main>
+
 <footer class="footer">Checkout</footer>
 <div id="toastContainer" class="toast-container"></div>
+
 <script type="module">
     import { initTheme, showToast } from './js/util.js';
     import { hydrateSessionUI } from './js/session.js';

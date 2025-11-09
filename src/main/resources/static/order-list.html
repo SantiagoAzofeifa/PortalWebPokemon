@@ -2,22 +2,21 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Mis Pedidos</title>
+    <title>Detalle Pedido</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/logo.css">
 </head>
 <body class="theme-light">
 <header class="app-header">
     <div class="logo-bar">
-        <h1>Mis Pedidos</h1>
+        <h1>Detalle Pedido</h1>
         <img class="site-logo" src="images/International_Pokémon_logo.svg.png" alt="logo">
     </div>
     <nav class="main-nav">
         <a href="index.html">Inicio</a>
         <a href="catalog.html">Catálogo</a>
         <a href="Cart.html">Carrito</a>
-        <a href="order-list.html" class="active">Mis Pedidos</a>
+        <a href="order-detail.html" class="active">Detalle</a>
         <a href="admin.html" data-requires-role="ADMIN">Admin</a>
         <span id="sessionCountdown" class="badge accent hidden" aria-live="polite">—</span>
         <button id="renewBtn" class="btn outline hidden" type="button">Renovar</button>
@@ -25,60 +24,23 @@
         <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
     </nav>
 </header>
+
 <main class="content">
     <section class="panel">
-        <h2>Mis Órdenes</h2>
-        <table class="table">
-            <thead><tr><th>ID</th><th>Fecha</th><th>Estado</th><th>Cliente</th><th>Acciones</th></tr></thead>
-            <tbody id="ordersBody"></tbody>
-        </table>
+        <div id="orderDetailContainer"></div>
     </section>
 </main>
-<footer class="footer">Lista de pedidos</footer>
+
+<footer class="footer">Detalle consolidado</footer>
 <div id="toastContainer" class="toast-container"></div>
+
 <script type="module">
     import { initTheme } from './js/util.js';
     import { hydrateSessionUI } from './js/session.js';
-    import API from './js/api.js';
-    import { showToast } from './js/util.js';
-
+    import { initOrderDetailPage } from './js/orders.js';
     initTheme();
     hydrateSessionUI();
-
-    const body = document.getElementById('ordersBody');
-    async function load() {
-        if (!API.token()) { body.innerHTML='<tr><td colspan="5">Inicia sesión</td></tr>'; return; }
-        body.innerHTML='<tr><td colspan="5">Cargando...</td></tr>';
-        try {
-            const list = await API.get('/api/orders/mine');
-            if (!list.length) { body.innerHTML='<tr><td colspan="5">Sin órdenes</td></tr>'; return; }
-            body.innerHTML='';
-            list.forEach(o=>{
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-          <td>${o.id}</td>
-          <td>${o.createdAt||''}</td>
-          <td><span class="badge">${o.status}</span></td>
-          <td>${o.customerName||'—'}</td>
-          <td>
-            <a class="btn small" href="order-detail.html?orderId=${o.id}">Ver</a>
-            <button class="btn small danger outline" data-del="${o.id}">Borrar</button>
-          </td>
-        `;
-                body.appendChild(tr);
-            });
-            body.onclick = async e=>{
-                if (e.target.matches('button[data-del]')) {
-                    const id = e.target.getAttribute('data-del');
-                    if (!confirm('¿Eliminar orden?')) return;
-                    try { await API.del(`/api/orders/${id}`); showToast('Orden eliminada','success'); load(); } catch {}
-                }
-            };
-        } catch {
-            body.innerHTML='<tr><td colspan="5" style="color:var(--danger)">Error</td></tr>';
-        }
-    }
-    load();
+    initOrderDetailPage();
 </script>
 </body>
 </html>

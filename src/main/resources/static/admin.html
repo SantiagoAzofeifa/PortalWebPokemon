@@ -5,14 +5,12 @@
     <title>Panel Administrador Completo</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/logo.css">
 </head>
 <body class="theme-light">
 <header class="app-header">
     <div class="logo-bar">
         <h1>Panel Administrador</h1>
         <img class="site-logo" src="images/International_Pokémon_logo.svg.png" alt="logo">
-
     </div>
     <nav class="main-nav">
         <a href="index.html">Inicio</a>
@@ -33,20 +31,20 @@
     <!-- Resumen -->
     <section class="panel">
         <h2>Resumen</h2>
-        <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:1rem;">
-            <div class="generic-card" style="padding:.8rem;">
+        <div class="admin-summary-grid">
+            <div class="admin-summary-card">
                 <strong>Usuarios</strong>
                 <p id="dashUsers" class="status-line">—</p>
             </div>
-            <div class="generic-card" style="padding:.8rem;">
+            <div class="admin-summary-card">
                 <strong>Órdenes (Usuario actual)</strong>
                 <p id="dashOrders" class="status-line">—</p>
             </div>
-            <div class="generic-card" style="padding:.8rem;">
-                <strong>P‑S Pendientes (Global)</strong>
+            <div class="admin-summary-card">
+                <strong>P-S Pendientes (Global)</strong>
                 <p id="dashPsPending" class="status-line">—</p>
             </div>
-            <div class="generic-card" style="padding:.8rem;">
+            <div class="admin-summary-card">
                 <strong>Timeout Sesión (s)</strong>
                 <p id="dashTimeout" class="status-line">—</p>
             </div>
@@ -56,7 +54,7 @@
     <!-- Control Timeout -->
     <section class="panel">
         <h2>Control de Sesión</h2>
-        <form id="sessionTimeoutForm" class="inline-form">
+        <form id="sessionTimeoutForm" class="inline-form admin-form">
             <label class="form-field">Nuevo Timeout (seg)
                 <input type="number" id="newTimeout" min="30" value="180">
             </label>
@@ -65,12 +63,10 @@
         <p class="status-line">Establece, por ejemplo, 180 para 3 minutos.</p>
     </section>
 
-
-
     <!-- Usuarios -->
     <section class="panel">
         <h2>Usuarios</h2>
-        <form id="userFilterForm" class="inline-form">
+        <form id="userFilterForm" class="inline-form admin-form">
             <label class="form-field">Buscar
                 <input id="userQ" placeholder="usuario">
             </label>
@@ -86,17 +82,14 @@
             <button class="btn accent" type="button" data-modal-open="modalUserNew">Nuevo Usuario</button>
         </form>
         <table class="table">
-            <thead><tr><th>ID</th><th>Usuario</th><th>Rol</th><th>Activo</th><th>Acciones</th></tr></thead>
+            <thead>
+            <tr><th>ID</th><th>Usuario</th><th>Rol</th><th>Activo</th><th>Acciones</th></tr>
+            </thead>
             <tbody id="userBody"></tbody>
         </table>
     </section>
 
-
-
-
-
-
-    <!-- CRUD Productos (si los mantienes además de catálogo dinámico) -->
+    <!-- CRUD Productos -->
     <section class="panel">
         <h2>CRUD Productos Internos (Opcional)</h2>
         <form id="productForm" class="form-grid">
@@ -135,9 +128,8 @@
                 <button class="btn outline" type="button" id="resetProdBtn">Limpiar</button>
             </div>
         </form>
-        <div id="adminProductsGrid" class="grid responsive" style="margin-top:1rem;"></div>
+        <div id="adminProductsGrid" class="grid responsive"></div>
     </section>
-
 </main>
 
 <footer class="footer">Panel administrativo extendido</footer>
@@ -167,7 +159,6 @@
     import { hydrateSessionUI } from './js/session.js';
     import './js/modal.js';
     import './js/admin-extended.js';
-
     initTheme();
     hydrateSessionUI();
 </script>

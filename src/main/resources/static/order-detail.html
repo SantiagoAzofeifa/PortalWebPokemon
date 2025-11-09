@@ -5,7 +5,6 @@
     <title>Detalle Pedido</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/logo.css">
 </head>
 <body class="theme-light">
 <header class="app-header">
@@ -25,13 +24,16 @@
         <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
     </nav>
 </header>
+
 <main class="content">
     <section class="panel">
         <div id="orderDetailContainer"></div>
     </section>
 </main>
+
 <footer class="footer">Detalle consolidado</footer>
 <div id="toastContainer" class="toast-container"></div>
+
 <script type="module">
     import { initTheme } from './js/util.js';
     import { hydrateSessionUI } from './js/session.js';

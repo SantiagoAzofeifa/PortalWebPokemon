@@ -5,15 +5,7 @@
    - Secciones compartidas (grids, cards, tablas, formularios, toasts, etc.)
    - Estilos específicos de páginas (Home e Inicio de Sesión)
    --------------------------------------------------------------------------
-   Estructura:
-   1) Tokens y normalización
-   2) Layout: header, navegación y contenedor
-   3) Componentes: botones, paneles, tarjetas, tablas, badges, filtros, toasts
-   4) Formularios, modales y utilidades
-   5) Footer, barras de progreso y estados de etapas
-   6) Reglas responsive globales
-   7) HOME (index.html): bienvenida, especificaciones, acciones, estado sesión
-   8) LOGIN (login.html): distribución auth, acciones, bloque de salida
+
    ========================================================================== */
 
 /* ==========================================================================
@@ -438,7 +430,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ==========================================================================
-   8) LOGIN (login.html): DISTRIBUCIÓN Y BLOQUES AUXILIARES
+   8) LOGIN (login.html)
    ========================================================================== */
 /* Contenedor de la página de autenticación */
 .auth-page {}
@@ -473,4 +465,357 @@ input:focus, select:focus, textarea:focus {
 @media (max-width: 640px) {
     .auth-page .form-row { grid-template-columns: 1fr; }
     .auth-page .form-row > label { justify-self: start; }
+}
+
+/* ==========================================================================
+   9) CARRITO (Cart.html)
+   ========================================================================== */
+/* Mensaje de estado del carrito */
+.status-line{
+    margin:.35rem 0 .6rem;
+    font-size:.9rem;
+    color:var(--text-soft);
+}
+
+/* Contenedor de acciones bajo la tabla del carrito */
+.cart-actions{
+    margin-top:.8rem;
+    align-items:center; /* usa junto con .flex-row existente */
+}
+
+/* Logo en la barra superior */
+.site-logo{
+    height:32px;
+    width:auto;
+    object-fit:contain;
+    display:inline-block;
+}
+
+/* ==========================================================================
+   10) CATALOGO (catalog.html)
+   ========================================================================== */
+
+/* Ocultar selector de tipo por defecto (lo muestra el JS según categoría) */
+#typeField { display: none; }
+
+/* Paginador bajo el grid */
+.catalog-pager { margin-top: .6rem; }
+
+/* Formulario de filtros en línea */
+.inline-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem 1rem;
+    align-items: end;
+    margin: .6rem 0 1rem;
+}
+.inline-form .form-field {
+    display: grid;
+    gap: .35rem;
+    font-size: .9rem;
+}
+
+/* Logo en barra superior, en caso de no estar ya definido */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   11) ADMIN (admin.html)
+   ========================================================================== */
+/* Grilla de tarjetas del resumen */
+.admin-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1rem;
+}
+
+/* Tarjetas de resumen (usuarios, órdenes, etc.) */
+.admin-summary-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .8rem;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Formularios inline para administración */
+.inline-form.admin-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem 1rem;
+    align-items: end;
+    margin: .6rem 0 1rem;
+}
+
+/* Rejilla de productos CRUD */
+#adminProductsGrid {
+    margin-top: 1rem;
+}
+
+/* Estado o línea informativa */
+.status-line {
+    margin: .35rem 0 .6rem;
+    font-size: .9rem;
+    color: var(--text-soft);
+}
+
+/* Logo del header administrativo */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   12) CHECKOUT (checkout.html)
+   ========================================================================== */
+
+/* Formulario del checkout */
+#checkoutForm {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Campos del formulario */
+#checkoutForm .form-field {
+    display: grid;
+    gap: .3rem;
+    font-size: .95rem;
+}
+
+/* Contenedor principal más estrecho */
+main.content.narrow {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   13) COUNTRIES (countries.html)
+   ========================================================================== */
+
+/* Grilla de países */
+#countriesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 1.2rem;
+}
+
+/* Tarjetas individuales de país */
+.country-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-alt);
+    padding: .6rem;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    transition: transform .15s ease-in-out;
+}
+.country-card:hover {
+    transform: translateY(-3px);
+}
+
+/* Bandera y nombre */
+.country-flag {
+    width: 100%;
+    max-height: 100px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+}
+.country-name {
+    margin-top: .4rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: .9rem;
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   14) ORDER DELIVERY (order-delivery.html)
+   ========================================================================== */
+
+/* Formulario principal de entrega */
+#deliveryForm {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Campos del formulario */
+#deliveryForm .form-field {
+    display: grid;
+    gap: .3rem;
+    font-size: .95rem;
+}
+
+/* Contenedor principal más estrecho */
+main.content.narrow {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   15) ORDER DETAIL (order-detail.html)
+   ========================================================================== */
+
+/* Contenedor principal de detalle */
+#orderDetailContainer {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   16) ORDER LIST (order-list.html)
+   ========================================================================== */
+
+/* Contenedor principal de detalle */
+#orderDetailContainer {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   17) ORDER PACKAGING (order-packaging.html)
+   ========================================================================== */
+
+/* Formulario de empaque */
+#packagingForm {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Campos del formulario */
+#packagingForm .form-field {
+    display: grid;
+    gap: .3rem;
+    font-size: .95rem;
+}
+
+/* Contenedor principal más estrecho */
+main.content.narrow {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   18) ORDER PAYMENT (order-payment.html)
+   ========================================================================== */
+
+/* Formulario de pago */
+#paymentForm {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Campos del formulario */
+#paymentForm .form-field {
+    display: grid;
+    gap: .3rem;
+    font-size: .95rem;
+}
+
+/* Contenedor principal más estrecho */
+main.content.narrow {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   19) ORDER WAREHOUSE (order-warehouse.html)
+   ========================================================================== */
+
+/* Formulario del almacén */
+#warehouseForm {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Campos del formulario */
+#warehouseForm .form-field {
+    display: grid;
+    gap: .3rem;
+    font-size: .95rem;
+}
+
+/* Contenedor principal más estrecho */
+main.content.narrow {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
 }

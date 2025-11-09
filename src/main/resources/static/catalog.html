@@ -5,7 +5,6 @@
     <title>Catálogo Unificado</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/logo.css">
 </head>
 <body class="theme-light">
 <header class="app-header">
@@ -26,9 +25,11 @@
         <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
     </nav>
 </header>
+
 <main class="content">
     <section class="panel">
         <h2>Explorar y comprar</h2>
+
         <form id="filterForm" class="inline-form">
             <label class="form-field">Categoría
                 <select id="categorySelect">
@@ -38,30 +39,39 @@
                     <option value="GAME">Games</option>
                 </select>
             </label>
-            <label class="form-field" id="typeField" style="display:none;">Tipo (solo Pokémon)
+
+            <label class="form-field" id="typeField">Tipo (solo Pokémon)
                 <select id="typeSelect"></select>
             </label>
+
             <label class="form-field">Buscar
                 <input id="queryInput" placeholder="pikachu, potion, red, ...">
             </label>
+
             <label class="form-field">Página
                 <input id="pageInput" type="number" min="0" value="0">
             </label>
+
             <label class="form-field">Size
                 <input id="sizeInput" type="number" min="1" max="50" value="12">
             </label>
+
             <button class="btn primary" type="submit">Filtrar</button>
         </form>
+
         <div id="productsGrid" class="grid responsive" aria-live="polite"></div>
-        <div class="flex-row" style="margin-top:.6rem;">
+
+        <div class="flex-row catalog-pager">
             <button id="prevPage" class="btn small outline">Anterior</button>
             <span id="pageInfo" style="font-size:.75rem;">—</span>
             <button id="nextPage" class="btn small outline">Siguiente</button>
         </div>
     </section>
 </main>
+
 <footer class="footer">Catálogo unificado (Pokémon, Items, Games)</footer>
 <div id="toastContainer" class="toast-container"></div>
+
 <script type="module">
     import { initTheme } from './js/util.js';
     import { hydrateSessionUI } from './js/session.js';

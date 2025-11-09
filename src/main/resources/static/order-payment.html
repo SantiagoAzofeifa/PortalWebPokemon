@@ -5,7 +5,6 @@
     <title>Pago Pedido</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/logo.css">
 </head>
 <body class="theme-light">
 <header class="app-header">
@@ -18,6 +17,7 @@
         <a href="#" id="orderLink">Volver Detalle</a>
     </nav>
 </header>
+
 <main class="content narrow">
     <section class="panel">
         <h2>Datos de Pago</h2>
@@ -38,8 +38,10 @@
         </form>
     </section>
 </main>
+
 <footer class="footer">Etapa Pago</footer>
 <div id="toastContainer" class="toast-container"></div>
+
 <script type="module">
     import { initTheme } from './js/util.js';
     import { hydrateSessionUI } from './js/session.js';
