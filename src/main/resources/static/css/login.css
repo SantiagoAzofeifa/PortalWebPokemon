@@ -1,0 +1,36 @@
+/* Página: Login / Registro
+   Depende de tokens globales definidos en index.css */
+
+.auth-page {}
+
+/* Distribución y separadores */
+.auth-page .panel + .panel { margin-top: 1.1rem; }
+
+/* Acciones centradas bajo el formulario de login */
+.session-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+/* Salida de autenticación como bloque de código legible */
+.code-block {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .85rem 1rem;
+    margin-top: .9rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: .82rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Ajustes de formularios en esta página */
+.auth-page .form-rows { gap: .7rem; }
+.auth-page .form-row { grid-template-columns: 1fr 320px; }
+@media (max-width: 640px) {
+    .auth-page .form-row { grid-template-columns: 1fr; }
+    .auth-page .form-row > label { justify-self: start; }
+}

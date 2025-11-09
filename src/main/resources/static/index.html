@@ -2,58 +2,62 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Portal PokeVentas - Inicio</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Inicio | Portal PokeVentas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Estilos base -->
     <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/indexHome.css">
     <link rel="stylesheet" href="css/logo.css">
 </head>
-<body class="theme-light">
+
+<body class="light">
 <header class="app-header">
     <div class="logo-bar">
-        <h1>Portal PokeVentas</h1>
+        <h1>Inicio</h1>
         <img class="site-logo" src="images/International_Pokémon_logo.svg.png" alt="logo">
     </div>
-    <nav class="main-nav">
+    <nav class="main-nav" aria-label="Navegación principal">
         <a href="index.html" class="active">Inicio</a>
         <a href="catalog.html">Catálogo</a>
         <a href="Cart.html">Carrito</a>
-        <a href="countries.html">Países</a>
-        <a href="order-list.html">Mis Pedidos</a>
         <a href="admin.html" data-requires-role="ADMIN">Admin</a>
-        <span id="sessionCountdown" class="badge accent hidden" aria-live="polite">—</span>
-        <button id="renewBtn" class="btn outline hidden" type="button">Renovar</button>
-        <a href="login.html" id="loginLink">Login</a>
-        <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
+        <a href="login.html">Login</a>
     </nav>
 </header>
-<main class="content">
-    <section class="hero">
-        <h2>Bienvenido</h2>
-        <p>Portal de venta con categorías: Comics, Figuras, Eventos, Series. Integración con PokeAPI y RestCountries. Flujo de venta multi-etapa.</p>
-        <p class="status-line">Sesión: <span id="userInfo">No autenticado</span></p>
-        <div class="flex-row">
-            <a class="btn primary" href="catalog.html">Explorar productos</a>
-            <a class="btn" href="Cart.html">Ir al carrito</a>
-        </div>
+
+<main class="content home">
+    <section class="welcome-section">
+        <h2>Bienvenidos</h2>
+        <p>
+            Bienvenido al portal de PokeVentas, un sistema de demostración para gestión y compra
+            de artículos Pokémon. Aquí podrás explorar el catálogo, agregar productos al carrito
+            y realizar compras seguras.
+        </p>
     </section>
 
-    <section class="panel">
-        <h3>Características del Proyecto</h3>
-        <ul style="margin:0 0 .6rem 1.1rem;font-size:.85rem;">
-            <li>Sesión en caché con timeout configurable</li>
-            <li>Renovación manual con botón</li>
-            <li>Carrito persistente por usuario</li>
-            <li>Pedidos y etapas: almacén, empaque, entrega, pago</li>
-            <li>Patrón P-S para indisponibilidades</li>
-            <li>Consumo dinámico de PokeAPI y RestCountries</li>
-            <li>Manejo de errores y mensajes accesibles</li>
+    <section class="project-info">
+        <h2>Especificaciones del Proyecto</h2>
+        <ul>
+            <li>Framework base: HTML5 + CSS modular + JS ES6</li>
+            <li>Estructura adaptable y responsive</li>
+            <li>Separación entre contenido y diseño</li>
+            <li>Estilo global gestionado en <code>index.css</code></li>
         </ul>
     </section>
+
+    <section class="session-status">
+        <label for="session">Sesión:</label>
+        <span id="session" class="session-label unauth">No autenticado</span>
+    </section>
+
+    <div class="actions">
+        <button class="btn primary">Explorar catálogo</button>
+        <button class="btn outline">Ver carrito</button>
+    </div>
 </main>
-<footer class="footer">
-    <small>Datos externos: <a href="https://pokeapi.co" target="_blank" rel="noopener">PokeAPI</a> / <a href="https://restcountries.com" target="_blank" rel="noopener">RestCountries</a></small>
-</footer>
-<div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+<footer class="footer">&copy; 2025 Portal PokeVentas</footer>
+
 <script type="module">
     import { initTheme } from './js/util.js';
     import { hydrateSessionUI } from './js/session.js';
