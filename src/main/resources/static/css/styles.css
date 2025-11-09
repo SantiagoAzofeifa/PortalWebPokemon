@@ -1,27 +1,35 @@
+/* ==========================================================================
+   Variables de diseño y tokens de tema
+   Definen la paleta, radios, sombras y transiciones para uso global.
+   ========================================================================== */
 :root {
-    --bg: #0f1115;
-    --bg-alt: #1c2128;
-    --bg-soft: #242b33;
-    --panel: #1f252c;
-    --text: #e2e8f0;
-    --text-soft: #94a3b8;
-    --primary: #3b82f6;
-    --primary-hover: #2563eb;
-    --accent: #8b5cf6;
-    --accent-hover: #7c3aed;
-    --danger: #ef4444;
-    --danger-hover: #dc2626;
-    --warn: #f59e0b;
-    --success: #10b981;
-    --border: #374151;
-    --radius: 10px;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.35);
-    --shadow: 0 6px 24px rgba(0,0,0,0.5);
-    --gradient: linear-gradient(135deg,var(--primary) 0%, var(--accent) 100%);
-    --transition: .18s ease;
-    --focus-ring: 0 0 0 3px rgba(59,130,246,.4);
+    --bg: #0f1115;                 /* Fondo base en modo oscuro */
+    --bg-alt: #1c2128;             /* Fondo alterno para encabezados y pie */
+    --bg-soft: #242b33;            /* Fondo suave para secciones internas */
+    --panel: #1f252c;              /* Fondo de paneles y tarjetas */
+    --text: #e2e8f0;               /* Texto principal en modo oscuro */
+    --text-soft: #94a3b8;          /* Texto secundario o de apoyo */
+    --primary: #3b82f6;            /* Color de acción primaria */
+    --primary-hover: #2563eb;      /* Estado hover de acción primaria */
+    --accent: #8b5cf6;             /* Color de acento */
+    --accent-hover: #7c3aed;       /* Estado hover de acento */
+    --danger: #ef4444;             /* Indicadores de error o peligro */
+    --danger-hover: #dc2626;       /* Hover para peligro */
+    --warn: #f59e0b;               /* Indicadores de advertencia */
+    --success: #10b981;            /* Indicadores de éxito */
+    --border: #374151;             /* Color base de bordes */
+    --radius: 10px;                /* Radio estándar de bordes redondeados */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.35); /* Sombra sutil */
+    --shadow: 0 6px 24px rgba(0,0,0,0.5);    /* Sombra prominente */
+    --gradient: linear-gradient(135deg,var(--primary) 0%, var(--accent) 100%); /* Gradiente para hero */
+    --transition: .18s ease;       /* Curva y duración por defecto */
+    --focus-ring: 0 0 0 3px rgba(59,130,246,.4); /* Realce de foco accesible */
 }
 
+/* ==========================================================================
+   Modo claro
+   Reasigna tokens para invertir contraste en temas claros.
+   ========================================================================== */
 body.light {
     --bg:#ffffff;
     --bg-alt:#f5f7fa;
@@ -35,61 +43,116 @@ body.light {
     --focus-ring:0 0 0 3px rgba(59,130,246,.35);
 }
 
+/* ==========================================================================
+   Normalización básica y tipografía
+   ========================================================================== */
 * { box-sizing:border-box; }
-html, body { margin:0; padding:0; font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif; background:var(--bg); color:var(--text); min-height:100%; }
 
-h1,h2,h3,h4 { margin:.55em 0 .35em; font-weight:600; letter-spacing:.5px; }
-p { line-height:1.5; }
+html, body {
+    margin:0;
+    padding:0;
+    font-family:'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif; /* Fuente segura y moderna */
+    background:var(--bg);
+    color:var(--text);
+    min-height:100%;
+}
 
-a { color:var(--primary); text-decoration:none; }
-a:hover { text-decoration:underline; }
+h1,h2,h3,h4 { margin:.55em 0 .35em; font-weight:600; letter-spacing:.5px; } /* Jerarquía de títulos */
+p { line-height:1.5; } /* Legibilidad en párrafos */
 
+a { color:var(--primary); text-decoration:none; }         /* Enlaces con color del sistema */
+a:hover { text-decoration:underline; }                    /* Indicador de interacción mínimo */
+
+/* ==========================================================================
+   Encabezado de la aplicación
+   Fijo en la parte superior. Aporta contenedor de marca y navegación.
+   ========================================================================== */
 .app-header {
     background: var(--bg-alt);
     border-bottom: 1px solid var(--border);
     position: sticky;
-    top:0; z-index:100;
+    top:0; z-index:100;                                    /* Se mantiene sobre el contenido */
     box-shadow: var(--shadow-sm);
 }
-.logo-bar { display:flex; align-items:center; gap:.9rem; padding:.75rem 1.1rem; flex-wrap:wrap; }
-.logo-bar h1 { font-size:1.25rem; letter-spacing:.8px; }
 
+/* --------------------------------------------------------------------------
+   Barra de logotipo y título
+   -------------------------------------------------------------------------- */
+.logo-bar {
+    display:flex;
+    align-items:center;
+    gap:.9rem;
+    padding:.75rem 1.1rem;
+    flex-wrap:wrap;                                        /* Permite envolver en pantallas pequeñas */
+}
+.logo-bar h1 {
+    font-size:1.8rem;                                      /* Tamaño incrementado para mayor jerarquía visual */
+    letter-spacing:1px;
+}
+
+/* --------------------------------------------------------------------------
+   Barra de navegación principal
+   Contiene enlaces y acciones contextuales de sesión.
+   -------------------------------------------------------------------------- */
 .main-nav {
-    display:flex; gap:.4rem; flex-wrap:wrap;
-    padding:.4rem .9rem .7rem;
+    display:flex;
+    gap:.6rem;
+    flex-wrap:wrap;                                        /* Resiliencia responsiva */
+    padding:.6rem 1rem .8rem;
     background:var(--bg-soft);
     border-top:1px solid var(--border);
 }
 
 .main-nav a, .main-nav button.btn {
-    padding:.55rem .85rem; border-radius:var(--radius);
-    font-size:.75rem; font-weight:600;
-    background:transparent; border:1px solid transparent;
-    line-height:1; cursor:pointer; letter-spacing:.5px;
-    display:inline-flex; align-items:center; gap:.4rem;
+    padding:.7rem 1rem;                                    /* Área táctil adecuada */
+    border-radius:var(--radius);
+    font-size:1rem;                                        /* Tamaño aumentado para legibilidad */
+    font-weight:600;
+    background:transparent;
+    border:1px solid transparent;                          /* Mantiene altura sin bordes visibles */
+    line-height:1.2;
+    cursor:pointer;
+    letter-spacing:.5px;
+    display:inline-flex; align-items:center; gap:.5rem;     /* Alineación vertical y espaciado de iconos */
     transition:var(--transition);
 }
 .main-nav a.active, .main-nav a:hover, .main-nav button.btn:hover {
-    background:var(--primary); color:#fff; text-decoration:none;
+    background:var(--primary);
+    color:#fff;
+    text-decoration:none;                                  /* Evita subrayado en hover activo */
 }
 
+/* ==========================================================================
+   Botones
+   Variantes coherentes con la paleta de tokens. Incluye outline y tamaño small.
+   ========================================================================== */
 .btn {
-    padding:.6rem .95rem; border-radius:var(--radius);
-    border:1px solid var(--border); background:var(--panel);
-    color:var(--text); font-size:.72rem; font-weight:600;
-    cursor:pointer; display:inline-flex; align-items:center; gap:.45rem;
-    transition:var(--transition); position:relative;
+    padding:.6rem .95rem;
+    border-radius:var(--radius);
+    border:1px solid var(--border);
+    background:var(--panel);
+    color:var(--text);
+    font-size:.8rem;                                       /* Ligeramente mayor que el texto base */
+    font-weight:600;
+    cursor:pointer;
+    display:inline-flex; align-items:center; gap:.45rem;
+    transition:var(--transition);
+    position:relative;
 }
-.btn.small { padding:.4rem .7rem; font-size:.65rem; }
+.btn.small { padding:.4rem .7rem; font-size:.7rem; }       /* Variante compacta */
 .btn.primary { background:var(--primary); border-color:var(--primary); color:#fff; }
 .btn.primary:hover { background:var(--primary-hover); }
 .btn.accent { background:var(--accent); border-color:var(--accent); color:#fff; }
 .btn.accent:hover { background:var(--accent-hover); }
 .btn.danger { background:var(--danger); border-color:var(--danger); color:#fff; }
 .btn.danger:hover { background:var(--danger-hover); }
-.btn.outline { background:transparent; }
+.btn.outline { background:transparent; }                   /* Variante sin relleno */
 .btn.outline:hover { background:var(--bg-soft); }
 
+/* ==========================================================================
+   Contenedor principal y paneles
+   Define un ancho máximo y estilos de tarjetas genéricas.
+   ========================================================================== */
 .content { max-width:1250px; margin:0 auto; padding:1.1rem 1rem 2.5rem; }
 
 .panel {
@@ -101,6 +164,10 @@ a:hover { text-decoration:underline; }
     box-shadow:var(--shadow-sm);
 }
 
+/* ==========================================================================
+   Sección hero
+   Uso de gradiente para destacar el bloque principal.
+   ========================================================================== */
 .hero {
     background: var(--gradient);
     color:#fff;
@@ -109,8 +176,11 @@ a:hover { text-decoration:underline; }
     box-shadow:var(--shadow);
 }
 
+/* ==========================================================================
+   Utilidades de grilla y tarjetas
+   ========================================================================== */
 .grid { display:grid; gap:1rem; }
-.grid.responsive { grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); }
+.grid.responsive { grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); } /* Grilla fluida */
 
 .product-card, .generic-card {
     background: var(--bg-alt);
@@ -122,26 +192,37 @@ a:hover { text-decoration:underline; }
     transition:var(--transition);
     position:relative;
 }
-.product-card:hover { transform:translateY(-4px); box-shadow:var(--shadow); }
+.product-card:hover { transform:translateY(-4px); box-shadow:var(--shadow); } /* Feedback de elevación */
 
-.product-card img { width:100%; height:170px; object-fit:contain; background:#fff; }
+.product-card img { width:100%; height:170px; object-fit:contain; background:#fff; } /* Imagen contenida */
 
-.product-card .body { padding:.75rem .85rem 1rem; display:flex; flex-direction:column; gap:.45rem; flex:1; }
+.product-card .body {
+    padding:.75rem .85rem 1rem;
+    display:flex; flex-direction:column; gap:.45rem;
+    flex:1;
+}
 
-.price { font-weight:700; font-size:.85rem; color:var(--primary); }
+.price { font-weight:700; font-size:.9rem; color:var(--primary); } /* Énfasis en precio */
 
-.table { width:100%; border-collapse:collapse; font-size:.68rem; }
+/* ==========================================================================
+   Tablas
+   Cabecera sticky para mejorar lectura en listados extensos.
+   ========================================================================== */
+.table { width:100%; border-collapse:collapse; font-size:.75rem; }
 .table th, .table td {
     padding:.55rem .6rem; border:1px solid var(--border); text-align:left; vertical-align:top;
 }
 .table th {
     background: var(--bg-soft);
-    position:sticky; top:0;
+    position:sticky; top:0;                                 /* Fija la cabecera al hacer scroll */
 }
 
+/* ==========================================================================
+   Insignias o etiquetas de estado
+   ========================================================================== */
 .badge {
-    display:inline-block; padding:.25rem .6rem;
-    font-size:.6rem; font-weight:700; letter-spacing:.6px;
+    display:inline-block; padding:.3rem .7rem;
+    font-size:.7rem; font-weight:700; letter-spacing:.6px;
     border-radius:999px; background:var(--primary); color:#fff;
     text-transform:uppercase;
 }
@@ -150,10 +231,13 @@ a:hover { text-decoration:underline; }
 .badge.success { background:var(--success); }
 .badge.accent { background:var(--accent); }
 
+/* ==========================================================================
+   Filtros y chips
+   ========================================================================== */
 .filter-bar { display:flex; flex-wrap:wrap; gap:.6rem; margin:.4rem 0 .9rem; }
 .filter-pill {
     background:var(--bg-soft); color:var(--text-soft);
-    padding:.35rem .6rem; border-radius:999px; font-size:.6rem;
+    padding:.4rem .7rem; border-radius:999px; font-size:.7rem;
     display:inline-flex; align-items:center; gap:.35rem;
 }
 .filter-pill button {
@@ -161,6 +245,10 @@ a:hover { text-decoration:underline; }
     font-size:.7rem; line-height:1;
 }
 
+/* ==========================================================================
+   Sistema de notificaciones tipo toast
+   Posiciona toasts en una columna fija y animada.
+   ========================================================================== */
 .toast-container {
     position:fixed; bottom:1rem; right:1rem;
     display:grid; gap:.55rem; z-index:3000; max-width:340px;
@@ -170,9 +258,9 @@ a:hover { text-decoration:underline; }
     border:1px solid var(--border);
     padding:.6rem .75rem;
     border-radius:var(--radius);
-    font-size:.65rem; line-height:1.3;
+    font-size:.75rem; line-height:1.3;
     box-shadow:var(--shadow-sm);
-    animation:fadeSlide .35s ease;
+    animation:fadeSlide .35s ease;                          /* Entrada visual suave */
 }
 .toast.success { border-color:var(--success); }
 .toast.error { border-color:var(--danger); }
@@ -183,28 +271,44 @@ a:hover { text-decoration:underline; }
     to { transform:translateY(0); opacity:1; }
 }
 
-.hidden { display:none !important; }
-.flex-row { display:flex; gap:.7rem; flex-wrap:wrap; }
-.flex-col { display:flex; flex-direction:column; gap:.6rem; }
+/* ==========================================================================
+   Utilidades
+   ========================================================================== */
+.hidden { display:none !important; }                        /* Ocultamiento forzado */
+.flex-row { display:flex; gap:.7rem; flex-wrap:wrap; }      /* Fila flexible con envoltura */
+.flex-col { display:flex; flex-direction:column; gap:.6rem; } /* Columna flexible */
 
+/* ==========================================================================
+   Controles de formulario
+   Foco accesible y contraste adecuado entre estados.
+   ========================================================================== */
 input, select, textarea {
-    font:inherit; padding:.55rem .65rem;
+    font:inherit;
+    padding:.55rem .65rem;
     border-radius:var(--radius);
     border:1px solid var(--border);
     background:var(--bg-alt);
     color:var(--text);
-    outline:0; transition:var(--transition);
+    outline:0;
+    transition:var(--transition);
 }
 input:focus, select:focus, textarea:focus {
     border-color:var(--primary);
-    box-shadow: var(--focus-ring);
+    box-shadow: var(--focus-ring);                          /* Indicador visible de foco */
 }
 
+/* ==========================================================================
+   Diseños de formularios
+   ========================================================================== */
 .form-grid {
     display:grid; gap:.9rem;
-    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); /* Adaptación fluida por ancho */
 }
 
+/* ==========================================================================
+   Modales
+   Contenedor centrado con backdrop atenuado y scroll interno.
+   ========================================================================== */
 .modal-backdrop {
     position:fixed; inset:0;
     background:rgba(0,0,0,.55);
@@ -222,15 +326,20 @@ input:focus, select:focus, textarea:focus {
 .modal header { display:flex; justify-content:space-between; align-items:center; }
 .modal footer { display:flex; gap:.6rem; flex-wrap:wrap; }
 
-.status-line { font-size:.65rem; color:var(--text-soft); }
+/* ==========================================================================
+   Línea de estado y pie de página
+   ========================================================================== */
+.status-line { font-size:.75rem; color:var(--text-soft); }  /* Mensajes auxiliares */
 
 .footer {
-    text-align:center; font-size:.65rem; padding:1.2rem .8rem;
+    text-align:center; font-size:.75rem; padding:1.2rem .8rem;
     border-top:1px solid var(--border); margin-top:2rem;
-    background:var(--bg-alt);
-    color:var(--text-soft);
+    background:var(--bg-alt); color:var(--text-soft);
 }
 
+/* ==========================================================================
+   Barra de progreso
+   ========================================================================== */
 .progress-bar {
     height:6px; background:var(--bg-soft);
     border-radius:999px; overflow:hidden; margin:.4rem 0 1rem;
@@ -238,9 +347,12 @@ input:focus, select:focus, textarea:focus {
 }
 .progress-bar span {
     display:block; height:100%; background:var(--primary);
-    width:0; transition:width .5s ease;
+    width:0; transition:width .5s ease;                    /* Animación de avance */
 }
 
+/* ==========================================================================
+   Estados por etapa de pedido
+   ========================================================================== */
 .stage-status {
     display:grid; gap:.5rem;
     grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
@@ -249,14 +361,19 @@ input:focus, select:focus, textarea:focus {
     background:var(--bg-alt);
     border:1px solid var(--border);
     border-radius:var(--radius);
-    padding:.6rem .7rem; font-size:.62rem;
+    padding:.6rem .7rem;
+    font-size:.7rem;
     display:flex; flex-direction:column; gap:.4rem;
 }
-.stage-card.done { border-color:var(--success); }
-.stage-card.pending { border-color:var(--warn); }
+.stage-card.done { border-color:var(--success); }           /* Etapa completada */
+.stage-card.pending { border-color:var(--warn); }           /* Etapa pendiente */
 
+/* ==========================================================================
+   Puntos de quiebre responsivos
+   Ajustes mínimos para mejorar uso en pantallas pequeñas.
+   ========================================================================== */
 @media (max-width:820px) {
-    .main-nav { overflow-x:auto; }
-    .product-card img { height:150px; }
+    .main-nav { overflow-x:auto; }                          /* Permite desplazamiento horizontal controlado */
+    .product-card img { height:150px; }                     /* Reduce altura de imagen en tarjetas */
     .form-grid { grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); }
 }
