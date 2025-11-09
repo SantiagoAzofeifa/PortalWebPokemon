@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login / Registro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+<h2>Registro</h2>
+<input id="r-username" placeholder="Usuario" />
+<input id="r-password" type="password" placeholder="Contraseña" />
+<select id="r-role">
+    <option value="USER">USER</option>
+    <option value="ADMIN">ADMIN</option>
+</select>
+<button id="btn-register">Registrar</button>
+
+<h2>Login</h2>
+<input id="l-username" placeholder="Usuario" />
+<input id="l-password" type="password" placeholder="Contraseña" />
+<button id="btn-login">Entrar</button>
+
+<pre id="out"></pre>
+
+<script>
+    const out = document.getElementById('out');
+    document.getElementById('btn-register').onclick = async () => {
+        const username = document.getElementById('r-username').value.trim();
+        const password = document.getElementById('r-password').value.trim();
+        const role = document.getElementById('r-role').value;
+        const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username,password,role})});
+        out.textContent = await res.text();
+    };
+    document.getElementById('btn-login').onclick = async () => {
+        const username = document.getElementById('l-username').value.trim();
+        const password = document.getElementById('l-password').value.trim();
+        const res = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username,password})});
+        const data = await res.json();
+        if (res.ok) {
+            localStorage.setItem('sessionToken', data.token);
+            out.textContent = 'Login OK. Token guardado.';
+        } else {
+            out.textContent = JSON.stringify(data);
+        }
+    };
+</script>
+</body>
+</html>

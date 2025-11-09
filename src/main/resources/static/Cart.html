@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Carrito</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+<h1>Carrito</h1>
+<table id="tbl" border="1" cellpadding="6">
+    <thead><tr><th>Item</th><th>Cantidad</th><th>Precio</th><th>Total</th><th></th></tr></thead>
+    <tbody></tbody>
+</table>
+<h3 id="sum"></h3>
+<script>
+    async function load() {
+        const token = localStorage.getItem('sessionToken');
+        if (!token) { alert('Inicia sesión'); return; }
+        const res = await fetch('/api/cart', { headers:{'X-SESSION-TOKEN':token}});
+        const data = await res.json();
+        const tb = document.querySelector('#tbl tbody');
+        tb.innerHTML = '';
+        let sum = 0;
+        for (const it of data.items) {
+            const tr = document.createElement('tr');
+            const total = it.unitPrice * it.quantity;
+            sum += total;
+            tr.innerHTML = `
+      <td>${it.productId}</td>
+      <td><input data-id="${it.id}" type="number" min="1" value="${it.quantity}"/></td>
+      <td>${it.unitPrice.toFixed(2)}</td>
+      <td>${total.toFixed(2)}</td>
+      <td><button data-del="${it.id}">Borrar</button></td>
+    `;
+            tb.appendChild(tr);
+        }
+        document.getElementById('sum').textContent = 'Total: $' + sum.toFixed(2);
+    }
+    document.addEventListener('change', async (e) => {
+        if (e.target.matches('input[type=number][data-id]')) {
+            const token = localStorage.getItem('sessionToken');
+            const id = e.target.getAttribute('data-id');
+            const quantity = parseInt(e.target.value);
+            await fetch(`/api/cart/items/${id}`, { method:'PUT', headers: {'Content-Type':'application/json','X-SESSION-TOKEN':token}, body: JSON.stringify({quantity})});
+            load();
+        }
+    });
+    document.addEventListener('click', async (e) => {
+        if (e.target.matches('button[data-del]')) {
+            const token = localStorage.getItem('sessionToken');
+            const id = e.target.getAttribute('data-del');
+            await fetch(`/api/cart/items/${id}`, { method:'DELETE', headers: {'X-SESSION-TOKEN':token}});
+            load();
+        }
+    });
+    load();
+</script>
+</body>
+</html>
