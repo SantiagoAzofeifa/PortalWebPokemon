@@ -208,7 +208,7 @@ a:hover { text-decoration:underline; }                    /* Indicador de intera
    Tablas
    Cabecera sticky para mejorar lectura en listados extensos.
    ========================================================================== */
-.table { width:100%; border-collapse:collapse; font-size:.75rem; }
+.table { width:100%; border-collapse:collapse; font-size:.100rem; }
 .table th, .table td {
     padding:.55rem .6rem; border:1px solid var(--border); text-align:left; vertical-align:top;
 }
