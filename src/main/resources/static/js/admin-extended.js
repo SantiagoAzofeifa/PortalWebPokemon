@@ -17,6 +17,7 @@ async function initAdminExtended() {
     setupRules();
     setupInternalProducts();
     setupGlobalOrders(); // NUEVO
+    bindUserNewModalSubmit(); // NUEVO: listener delegado para el modal
 }
 
 /* ---------- Verificación ADMIN ---------- */
@@ -145,19 +146,29 @@ function setupUsers() {
             body.innerHTML='<tr><td colspan="5" style="color:var(--danger)">Error</td></tr>';
         }
     }
+}
 
-    // Modal nuevo usuario
-    const userNewForm = qs('#userNewForm');
-    userNewForm?.addEventListener('submit', async e=>{
+/* ---------- SUBMIT del modal "Nuevo Usuario" (delegado) ---------- */
+function bindUserNewModalSubmit() {
+    document.addEventListener('submit', async (e)=>{
+        // Solo forms del modal visible con id userNewForm
+        if (!(e.target instanceof HTMLFormElement)) return;
+        if (e.target.id !== 'userNewForm') return;
+        // Asegura que sea el del modal (no el template oculto)
+        if (!e.target.closest('.modal-backdrop')) return;
+
         e.preventDefault();
-        const fd=new FormData(userNewForm);
+        const fd=new FormData(e.target);
         const body=Object.fromEntries(fd.entries());
         try {
             await API.post('/api/auth/register', body);
             showToast('Usuario creado','success');
-            userNewForm.reset();
+            e.target.reset();
             closeModal('modalUserNew');
-            loadUsers();
+            // Opcional: refrescar tabla si está presente
+            const reloadBtn = qs('#reloadUsersBtn'); // por si tuvieras un botón
+            if (reloadBtn) reloadBtn.click();
+            else location.reload(); // fallback simple
         } catch {}
     });
 }
@@ -204,7 +215,7 @@ function setupGlobalOrders() {
             const filtered = orders.filter(o=>{
                 let ok=true;
                 if (fUserId && o.userId!==fUserId) ok=false;
-                if (fStatus && o.status.toUpperCase()!==fStatus) ok=false;
+                if (fStatus && (o.status||'').toUpperCase()!==fStatus) ok=false;
                 if (fFrom && new Date(o.createdAt).getTime()<fFrom) ok=false;
                 if (fTo && new Date(o.createdAt).getTime()>fTo) ok=false;
                 return ok;
@@ -220,7 +231,7 @@ function setupGlobalOrders() {
                 tr.innerHTML = `
           <td>${o.id}</td>
           <td>${o.userId}</td>
-          <td><span class="badge">${escapeHTML(o.status)}</span></td>
+          <td><span class="badge">${escapeHTML(o.status||'')}</span></td>
           <td>${o.createdAt||''}</td>
           <td>
             <button class="btn small" data-view-order="${o.id}">Ver</button>
@@ -239,7 +250,6 @@ async function deleteOrder(id) {
     try {
         await API.del(`/api/orders/${id}`);
         showToast('Orden eliminada','success');
-        // Reset detalle si era la que estaba viendo
         if (currentOrderId === id) {
             currentOrderId = null;
             qs('#orderDetailWrapper').style.display='none';
@@ -247,7 +257,7 @@ async function deleteOrder(id) {
             qs('#orderStagesWrapper').style.display='none';
             qs('#selectedOrderInfo').textContent='Orden eliminada. Selecciona otra.';
         }
-        setupGlobalOrders(); // recargar lista
+        setupGlobalOrders();
     } catch {
         showToast('Error eliminando orden','error');
     }
@@ -276,7 +286,6 @@ async function loadOrderDetail(orderId) {
         const delivery = data.delivery;
         const payment = data.payment;
 
-        // Info básica de la orden
         detailWrap.innerHTML = `
       <div class="generic-card" style="padding:.7rem;">
         <strong>Orden #${o.id}</strong><br>
@@ -284,13 +293,12 @@ async function loadOrderDetail(orderId) {
         Cliente: ${escapeHTML(o.customerName||'—')}<br>
         Email: ${escapeHTML(o.customerEmail||'—')}<br>
         País Destino: ${escapeHTML(o.country||'—')}<br>
-        Estado: <span class="badge">${escapeHTML(o.status)}</span><br>
+        Estado: <span class="badge">${escapeHTML(o.status||'')}</span><br>
         Creada: ${o.createdAt||'—'}
       </div>
     `;
         detailWrap.style.display='grid';
 
-        // Items
         itemsBody.innerHTML='';
         items.forEach(i=>{
             const tr = document.createElement('tr');
@@ -305,7 +313,6 @@ async function loadOrderDetail(orderId) {
         });
         itemsWrap.style.display='block';
 
-        // Etapas vistas
         renderStageView('#warehouseView', warehouse, [
             'inDate','outDate','stockChecked','stockQty','location','originCountry','notes'
         ]);
@@ -320,13 +327,14 @@ async function loadOrderDetail(orderId) {
         ]);
         stagesWrap.style.display='block';
 
-        // Bind forms
         bindStageForms(orderId);
 
-        deleteBtn.onclick = ()=> {
-            if (!confirm('¿Eliminar orden completa?')) return;
-            deleteOrder(orderId);
-        };
+        if (deleteBtn) {
+            deleteBtn.onclick = ()=> {
+                if (!confirm('¿Eliminar orden completa?')) return;
+                deleteOrder(orderId);
+            };
+        }
 
         info.textContent = `Detalle de orden #${orderId}`;
     } catch {
@@ -346,7 +354,6 @@ function renderStageView(selector, obj, fields) {
 
 function toIso(val) {
     if (!val) return null;
-    // val se interpreta como hora local; toISOString lo emite en UTC con 'Z'
     const d = new Date(val);
     return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString();
 }
@@ -365,13 +372,17 @@ function bindStageForms(orderId) {
         try {
             await API.put(`/api/orders/${orderId}/warehouse`, body);
             showToast('Warehouse guardado','success');
+
+            // Si quieres crear una alerta por items no chequeados, hazlo contra un endpoint válido (no implementado ahora).
+            // try { await API.post(`/api/admin/ps`, {...}); } catch {}
+
             loadOrderDetail(orderId);
         } catch (err) {
             showToast(err?.message || 'Error guardando warehouse','error');
         }
     });
 
-    // Packaging (sin fechas)
+    // Packaging
     const pForm = qs('#packagingForm');
     pForm && (pForm.onsubmit = async e=>{
         e.preventDefault();

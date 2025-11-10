@@ -4,15 +4,8 @@
     <meta charset="UTF-8">
     <title>Login / Registro</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <!-- Base global -->
     <link rel="stylesheet" href="css/auth.css">
     <link rel="stylesheet" href="css/logo.css">
-    <style>
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: flex; align-items: center; justify-content: center; z-index: 5000; }
-        .modal-overlay.hidden { display: none; }
-        .modal { background: var(--panel-bg, #1e1e25); color: var(--text-color,#fff); padding: 1.2rem 1.4rem; border-radius: 8px; width: min(420px,90%); box-shadow: 0 8px 28px rgba(0,0,0,.4); }
-        .modal h2 { margin: 0 0 .5rem; font-size: 1.1rem; }
-    </style>
 </head>
 <body class="dark">
 <header class="app-header">
@@ -24,8 +17,11 @@
         <a href="index.html">Inicio</a>
         <a href="catalog.html">Catálogo</a>
         <a href="Cart.html">Carrito</a>
+        <a href="countries.html">Países</a>
+        <a href="order-list.html">Mis Pedidos</a>
         <a href="admin.html" data-requires-role="ADMIN">Admin</a>
         <span id="sessionCountdown" class="badge accent hidden" aria-live="polite">—</span>
+        <button id="renewBtn" class="btn outline hidden" type="button">Renovar</button>
         <a href="login.html" id="loginLink">Login</a>
         <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
     </nav>
@@ -80,23 +76,12 @@
             </div>
         </form>
 
+        <!-- Eliminamos el botón Renovar duplicado aquí, usamos el del header -->
         <pre id="authOutput" class="code-block" aria-live="polite"></pre>
     </section>
 </main>
 
 <footer class="footer">&copy; 2025 Portal PokeVentas</footer>
-
-<!-- Modal renovar sesión -->
-<div id="sessionRenewModal" class="modal-overlay hidden" aria-hidden="true" role="dialog" aria-labelledby="sessionRenewTitle">
-    <div class="modal">
-        <h2 id="sessionRenewTitle">Sesión expirada</h2>
-        <p>Tu sesión ha expirado. ¿Deseas renovarla para continuar?</p>
-        <div class="flex-row" style="gap:.6rem;">
-            <button id="sessionRenewYes" class="btn success">Renovar</button>
-            <button id="sessionRenewNo" class="btn danger outline">Cerrar sesión</button>
-        </div>
-    </div>
-</div>
 
 <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 

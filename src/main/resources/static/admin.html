@@ -249,30 +249,10 @@
         </form>
         <div id="adminProductsGrid" class="grid responsive"></div>
     </section>
-
 </main>
 
 <footer class="footer">Panel administrativo</footer>
 <div id="toastContainer" class="toast-container"></div>
-
-<!-- Modal Nuevo Usuario -->
-<div id="modalUserNew" data-title="Nuevo Usuario" class="hidden">
-    <form id="userNewForm" class="form-grid">
-        <label class="form-field">Usuario
-            <input name="username" required minlength="3">
-        </label>
-        <label class="form-field">Contraseña
-            <input type="password" name="password" required minlength="4">
-        </label>
-        <label class="form-field">Rol
-            <select name="role">
-                <option value="USER">USER</option>
-                <option value="ADMIN">ADMIN</option>
-            </select>
-        </label>
-        <button class="btn success" type="submit">Crear</button>
-    </form>
-</div>
 
 <script type="module">
     import { initTheme } from './js/util.js';

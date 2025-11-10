@@ -1,105 +1,80 @@
-// session.js
-// Manejo centralizado de sesión con modal de renovación automática.
-// Requiere: API helper (api.js), util.js (showToast), y el modal HTML incluido en cada página.
+// session.js (renovación manual + header unificado)
+// - Muestra contador #sessionCountdown si hay sesión.
+// - Muestra botón #renewBtn y #logoutBtn cuando hay sesión; muestra #loginLink cuando no.
+// - Oculta/enseña enlaces [data-requires-role="ADMIN"] según el rol del usuario.
+// - Sin modales automáticos.
 
 import API from './api.js';
-import { qs, showToast } from './util.js';
+import { qs, qsa, showToast } from './util.js';
 
-/**
- * Estado interno de la sesión.
- * expiresAt: ISO string del momento de expiración (cuando se creó el token)
- * remainingSecs: número aproximado para display (calculado)
- */
-let sessionState = {
-    expiresAt: null,
-    remainingSecs: 0,
-    tickInterval: null,
-    modalVisible: false
-};
+let tick = null;
+let expiresAt = null;
 
-const COUNTDOWN_ELEMENT_ID = 'sessionCountdown';
-const CHECK_INTERVAL_MS = 1000;
-const MODAL_ID = 'sessionRenewModal';
+const COUNTDOWN_ID = 'sessionCountdown';
+const RENEW_BTN_ID = 'renewBtn';
+const LOGOUT_BTN_ID = 'logoutBtn';
+const LOGIN_LINK_ID = 'loginLink';
 
 function hydrateSessionUI() {
-    // Si no hay token, ocultar contador y terminar.
-    if (!API.token()) {
-        const el = qs('#' + COUNTDOWN_ELEMENT_ID);
-        el && el.classList.add('hidden');
+    const token = API.token();
+    const counter = qs('#' + COUNTDOWN_ID);
+
+    // Limpia interval previo
+    if (tick) { clearInterval(tick); tick = null; }
+
+    // Si no hay token: aplicar header sin sesión y salir
+    if (!token) {
+        applyHeader(null);
+        counter && counter.classList.add('hidden');
         return;
     }
 
-    // Intentamos obtener datos de sesión (/api/auth/me) para saber expiración.
-    // El login response original trae expiresIn (segundos) pero aquí podemos
-    // recalcular a partir de la expiración persistida en memoria si la incluiste;
-    // tu /api/auth/me devuelve expiresAt (Instant string).
-    bootstrapExpiration().then(() => {
-        startCountdownLoop();
+    // Con token: traemos /me para rol y expiración
+    bootstrapMe().then(me => {
+        applyHeader(me); // muestra/oculta botones y enlaces ADMIN
+
+        // Manejo de contador si viene expiresAt
+        if (!me?.expiresAt) {
+            counter && counter.classList.add('hidden');
+            return;
+        }
+        expiresAt = me.expiresAt;
+        counter && counter.classList.remove('hidden');
+        startCountdown(counter);
     }).catch(() => {
-        // Si falla, asumimos sesión inválida y limpiamos.
-        handleSessionExpired();
+        // Si falla /me, asumir no autenticado
+        applyHeader(null);
+        counter && counter.classList.add('hidden');
     });
 
-    wireRenewModal();
+    // Wire de botones cada vez (idempotente)
+    wireRenew();
+    wireLogout();
 }
 
-/**
- * Inicializa la expiración preguntando /api/auth/me.
- * Espera un campo expiresAt (ISO), si no existe se estima usando un TTL fallback.
- */
-async function bootstrapExpiration() {
-    const data = await API.get('/api/auth/me');
-    if (!data.expiresAt) {
-        // Si tu backend no manda expiresAt, reemplaza por Date.now()+ ttl*1000 (si conservas el TTL tras login).
-        // Por ahora, si no viene, se fuerza a 2 minutos.
-        const now = Date.now();
-        sessionState.expiresAt = new Date(now + 120000).toISOString();
-    } else {
-        sessionState.expiresAt = data.expiresAt;
-    }
+async function bootstrapMe() {
+    // Devuelve objeto { userId, username, role, expiresAt } o lanza si 401
+    return await API.get('/api/auth/me');
 }
 
-/**
- * Loop que actualiza el contador y muestra modal cuando expira.
- */
-function startCountdownLoop() {
-    clearInterval(sessionState.tickInterval);
-
-    sessionState.tickInterval = setInterval(() => {
-        if (!sessionState.expiresAt) return;
-
-        const diffMs = new Date(sessionState.expiresAt).getTime() - Date.now();
-        const remaining = Math.floor(diffMs / 1000);
-        sessionState.remainingSecs = remaining;
-
-        updateCountdownBadge(remaining);
-
-        if (remaining <= 0) {
-            // Expirada: detener loop y mostrar modal si no se ha mostrado.
-            clearInterval(sessionState.tickInterval);
-            showRenewModal();
-        }
-    }, CHECK_INTERVAL_MS);
+function startCountdown(counterEl) {
+    updateBadge(counterEl); // primer pintado
+    tick = setInterval(() => {
+        if (!expiresAt) return;
+        updateBadge(counterEl);
+    }, 1000);
 }
 
-/**
- * Actualiza el badge visual de cuenta regresiva si existe.
- */
-function updateCountdownBadge(secs) {
-    const el = qs('#' + COUNTDOWN_ELEMENT_ID);
-    if (!el) return;
+function updateBadge(counterEl) {
+    const diff = new Date(expiresAt).getTime() - Date.now();
+    const secs = Math.floor(diff / 1000);
     if (secs <= 0) {
-        el.textContent = 'Expirada';
-        el.classList.remove('hidden');
+        counterEl.textContent = 'Expirada';
         return;
     }
-    el.classList.remove('hidden');
-    el.textContent = formatRemaining(secs);
+    counterEl.textContent = formatRemaining(secs);
 }
 
-/**
- * Aplica formato amigable: mm:ss o ss si < 60.
- */
 function formatRemaining(secs) {
     if (secs < 60) return secs + 's';
     const m = Math.floor(secs / 60);
@@ -107,87 +82,89 @@ function formatRemaining(secs) {
     return `${m}:${String(s).padStart(2,'0')}`;
 }
 
-/**
- * Muestra el modal de renovar sesión.
- */
-function showRenewModal() {
-    if (sessionState.modalVisible) return;
-    const modal = qs('#' + MODAL_ID);
-    if (!modal) return;
-    modal.classList.remove('hidden');
-    modal.setAttribute('aria-hidden','false');
-    sessionState.modalVisible = true;
+// Botón Renovar
+function wireRenew() {
+    const renewBtn = qs('#' + RENEW_BTN_ID);
+    if (!renewBtn) return;
+    renewBtn.classList.remove('hidden');
+    renewBtn.onclick = async () => {
+        await renewSessionManual();
+    };
 }
 
-/**
- * Oculta el modal (post renovación o logout).
- */
-function hideRenewModal() {
-    const modal = qs('#' + MODAL_ID);
-    if (!modal) return;
-    modal.classList.add('hidden');
-    modal.setAttribute('aria-hidden','true');
-    sessionState.modalVisible = false;
+// Botón Salir
+function wireLogout() {
+    const logoutBtn = qs('#' + LOGOUT_BTN_ID);
+    if (!logoutBtn) return;
+    logoutBtn.onclick = async () => {
+        try {
+            await API.post('/api/auth/logout', {});
+        } catch (_) {
+            // ignorar errores de logout
+        }
+        // Limpiar tokens y UI
+        localStorage.removeItem('sessionToken');
+        sessionStorage.removeItem('sessionToken');
+        showToast('Sesión cerrada', 'success');
+        applyHeader(null);
+        // Redirige a login salvo que ya estés ahí
+        if (!location.pathname.endsWith('/login.html')) {
+            setTimeout(()=> location.href='login.html', 600);
+        }
+    };
 }
 
-/**
- * Wire de los botones del modal.
- */
-function wireRenewModal() {
-    const yesBtn = qs('#sessionRenewYes');
-    const noBtn = qs('#sessionRenewNo');
-    if (yesBtn) {
-        yesBtn.onclick = async () => {
-            try {
-                const resp = await API.post('/api/auth/renew', {}); // backend renueva
-                if (!resp || !resp.expiresIn) {
-                    // Si /renew no devuelve expiresAt, recalculamos.
-                    const now = Date.now();
-                    const ttlMs = resp?.expiresIn ? resp.expiresIn * 1000 : 60000;
-                    sessionState.expiresAt = new Date(now + ttlMs).toISOString();
-                } else {
-                    // Si decidieras enviar expiresAt en este endpoint, úsalo directamente.
-                    const now = Date.now();
-                    const ttlMs = resp.expiresIn * 1000;
-                    sessionState.expiresAt = new Date(now + ttlMs).toISOString();
-                }
-                hideRenewModal();
-                showToast('Sesión renovada','success');
-                startCountdownLoop();
-            } catch (err) {
-                showToast('No se pudo renovar la sesión','error');
-                handleSessionExpired(); // si falla, se cierra la sesión
+// Aplica visibilidad en el header según sesión/rol
+function applyHeader(me) {
+    const hasSession = !!me;
+    const loginLink = qs('#' + LOGIN_LINK_ID);
+    const logoutBtn = qs('#' + LOGOUT_BTN_ID);
+    const renewBtn = qs('#' + RENEW_BTN_ID);
+    const counter = qs('#' + COUNTDOWN_ID);
+
+    if (hasSession) {
+        loginLink && loginLink.classList.add('hidden');
+        logoutBtn && logoutBtn.classList.remove('hidden');
+        renewBtn && renewBtn.classList.remove('hidden');
+        counter && counter.classList.remove('hidden');
+    } else {
+        loginLink && loginLink.classList.remove('hidden');
+        logoutBtn && logoutBtn.classList.add('hidden');
+        renewBtn && renewBtn.classList.add('hidden');
+        counter && counter.classList.add('hidden');
+    }
+
+    // Enlaces solo-ADMIN
+    const adminEls = qsa('[data-requires-role="ADMIN"]');
+    const isAdmin = me?.role === 'ADMIN';
+    adminEls.forEach(el => {
+        if (isAdmin) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+    });
+}
+
+// Renovación manual
+async function renewSessionManual() {
+    try {
+        const d = await API.post('/api/auth/renew', {});
+        showToast('Sesión renovada', 'success');
+        const ttl = Number(d?.expiresIn || 0);
+        if (ttl > 0) {
+            const now = Date.now();
+            expiresAt = new Date(now + ttl * 1000).toISOString();
+            const counter = qs('#' + COUNTDOWN_ID);
+            if (counter) {
+                counter.classList.remove('hidden');
+                if (tick) clearInterval(tick);
+                startCountdown(counter);
             }
-        };
+        }
+    } catch (err) {
+        showToast('No se pudo renovar la sesión', 'error');
     }
-    if (noBtn) {
-        noBtn.onclick = () => {
-            handleSessionExpired();
-        };
-    }
-}
-
-/**
- * Limpia token, muestra mensaje y redirige.
- */
-function handleSessionExpired() {
-    localStorage.removeItem('sessionToken');
-    hideRenewModal();
-    showToast('Sesión finalizada','warn');
-    // Puedes usar setTimeout para mostrar el toast unos ms antes de redirigir
-    setTimeout(()=> location.href='login.html', 800);
-}
-
-/**
- * Para uso opcional desde login.js si quieres forzar un rebootstrap tras login.
- */
-function restartSessionCountdown(ttlSeconds) {
-    const now = Date.now();
-    sessionState.expiresAt = new Date(now + ttlSeconds*1000).toISOString();
-    startCountdownLoop();
 }
 
 export {
     hydrateSessionUI,
-    restartSessionCountdown
+    renewSessionManual
 };

@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <title>Inicio | Portal PokeVentas</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Estilos base -->
-
     <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="css/logo.css">
 </head>
@@ -20,8 +18,13 @@
         <a href="index.html" class="active">Inicio</a>
         <a href="catalog.html">Catálogo</a>
         <a href="Cart.html">Carrito</a>
+        <a href="countries.html">Países</a>
+        <a href="order-list.html">Mis Pedidos</a>
         <a href="admin.html" data-requires-role="ADMIN">Admin</a>
-        <a href="login.html">Login</a>
+        <span id="sessionCountdown" class="badge accent hidden" aria-live="polite">—</span>
+        <button id="renewBtn" class="btn outline hidden" type="button">Renovar</button>
+        <a href="login.html" id="loginLink">Login</a>
+        <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
     </nav>
 </header>
 
@@ -57,6 +60,8 @@
 </main>
 
 <footer class="footer">&copy; 2025 Portal PokeVentas</footer>
+
+<div id="toastContainer" class="toast-container"></div>
 
 <script type="module">
     import { initTheme } from './js/util.js';

@@ -75,12 +75,9 @@
     const nameError = document.getElementById("nameError");
     const phoneError = document.getElementById("phoneError");
 
-    // 🔹 Solo letras y espacios
     nameInput.addEventListener("input", function () {
         const original = this.value;
         const cleaned = original.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
-
-        // Si quitó caracteres inválidos, mostrar el error
         if (original !== cleaned) {
             nameError.style.display = "block";
             this.classList.add("invalid");
@@ -88,11 +85,9 @@
             nameError.style.display = "none";
             this.classList.remove("invalid");
         }
-
         this.value = cleaned;
     });
 
-    // 🔹 Solo números
     phoneInput.addEventListener("input", function () {
         this.value = this.value.replace(/[^0-9]/g, '');
         if (!/^[0-9]{8,}$/.test(this.value) && this.value !== "") {
@@ -104,9 +99,8 @@
         }
     });
 
-    // 🔹 Validación de sesión y envío del pedido
     if (!requireAuthOnLoad()) {
-        // redirige a login
+        // redirige a login si no hay sesión
     } else {
         const form = document.getElementById('checkoutForm');
         form.onsubmit = async (e) => {
