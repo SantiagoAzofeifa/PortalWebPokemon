@@ -192,7 +192,7 @@ a:hover { text-decoration:underline; }
 .price { font-weight:700; font-size:.9rem; color:var(--primary); }
 
 /* Tablas */
-.table { width:100%; border-collapse:collapse; font-size:.100rem; }
+.table { width:100%; border-collapse:collapse; font-size:1rem; }
 .table th, .table td {
     padding:.55rem .6rem; border:1px solid var(--border); text-align:left; vertical-align:top;
 }
@@ -472,14 +472,14 @@ input:focus, select:focus, textarea:focus {
    ========================================================================== */
 /* Mensaje de estado del carrito */
 .status-line{
-    margin:.35rem 0 .6rem;
-    font-size:.9rem;
+    margin:.35rem 0 .2rem;
+    font-size: 20rem;
     color:var(--text-soft);
 }
 
 /* Contenedor de acciones bajo la tabla del carrito */
 .cart-actions{
-    margin-top:.8rem;
+    margin-top:1rem;
     align-items:center; /* usa junto con .flex-row existente */
 }
 
