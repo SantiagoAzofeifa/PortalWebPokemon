@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Empaque Pedido</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body class="theme-light">
+<header class="app-header">
+    <div class="logo-bar">
+        <h1>Empaque</h1>
+        <img class="site-logo" src="images/International_Pokémon_logo.svg.png" alt="logo">
+    </div>
+    <nav class="main-nav">
+        <a href="index.html">Inicio</a>
+        <a href="#" id="orderLink">Volver Detalle</a>
+    </nav>
+</header>
+
+<main class="content narrow">
+    <section class="panel">
+        <h2>Datos de Empaque</h2>
+        <form id="packagingForm" class="form-grid">
+            <label class="form-field">Tamaño
+                <select name="size">
+                    <option value="GRANDE">GRANDE</option>
+                    <option value="MEDIANO">MEDIANO</option>
+                    <option value="PEQUEÑO">PEQUEÑO</option>
+                </select>
+            </label>
+            <label class="form-field">Tipo
+                <select name="type">
+                    <option value="LIBRE">LIBRE</option>
+                    <option value="AL_VACIO">AL_VACIO</option>
+                    <option value="RELLENO">RELLENO</option>
+                </select>
+            </label>
+            <label class="form-field">Materiales
+                <input name="materials">
+            </label>
+            <label class="form-field">Frágil
+                <input type="checkbox" name="fragile">
+            </label>
+            <label class="form-field">Notas
+                <textarea name="notes" rows="2"></textarea>
+            </label>
+            <button class="btn success" type="submit">Guardar</button>
+        </form>
+    </section>
+</main>
+
+<footer class="footer">Etapa Empaque</footer>
+<div id="toastContainer" class="toast-container"></div>
+
+<script type="module">
+    import { initTheme } from './js/util.js';
+    import { hydrateSessionUI } from './js/session.js';
+    import { initPackagingPage } from './js/orders.js';
+    initTheme();
+    hydrateSessionUI();
+    initPackagingPage();
+</script>
+</body>
+</html>

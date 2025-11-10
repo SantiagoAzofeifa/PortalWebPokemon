@@ -1,0 +1,21 @@
+
+.logo-bar {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    padding: .75rem 1.1rem;
+    flex-wrap: wrap;
+}
+
+.logo-bar .site-logo {
+    height: clamp(22px, 4vw, 36px);
+    width: auto;
+    object-fit: contain;
+    display: block;
+}
+
+@media (max-width: 640px) {
+    .logo-bar .site-logo {
+        height: clamp(20px, 6vw, 32px);
+    }
+}

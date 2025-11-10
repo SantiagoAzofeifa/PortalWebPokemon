@@ -1,0 +1,821 @@
+/* ==========================================================================
+   PORTAL POKEVENTAS — CSS
+   Archivo único que concentra:
+   - Tokens globales, resets y componentes base
+   - Secciones compartidas (grids, cards, tablas, formularios, toasts, etc.)
+   - Estilos específicos de páginas (Home e Inicio de Sesión)
+   --------------------------------------------------------------------------
+
+   ========================================================================== */
+
+/* ==========================================================================
+   1) TOKENS DE TEMA Y NORMALIZACIÓN
+   ========================================================================== */
+:root {
+    /* Colores ya definidos... */
+    --bg: #0f1115;
+    --bg-alt: #1c2128;
+    --bg-soft: #242b33;
+    --panel: #1f252c;
+    --text: #e2e8f0;
+    --text-soft: #94a3b8;
+
+    /* === NUEVAS VARIABLES PARA EVITAR EL ERROR === */
+    --text-primary: var(--text);
+    --text-secondary: var(--text-soft);
+
+    /* Resto de variables... */
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --accent: #8b5cf6;
+    --accent-hover: #7c3aed;
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+    --warn: #f59e0b;
+    --success: #10b981;
+    --border: #374151;
+    --radius: 10px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.35);
+    --shadow: 0 6px 24px rgba(0,0,0,0.5);
+    --gradient: linear-gradient(135deg,var(--primary) 0%, var(--accent) 100%);
+    --transition: .18s ease;
+    --focus-ring: 0 0 0 3px rgba(59,130,246,.4);
+}
+
+body.light {
+    --bg:#ffffff;
+    --bg-alt:#f5f7fa;
+    --bg-soft:#eef1f5;
+    --panel:#ffffff;
+    --text:#1e293b;
+    --text-soft:#64748b;
+    --border:#d2dae3;
+    --shadow-sm:0 1px 2px rgba(0,0,0,0.15);
+    --shadow:0 6px 20px rgba(0,0,0,0.15);
+    --focus-ring:0 0 0 3px rgba(59,130,246,.35);
+}
+
+/* Reset mínimo y tipografía base */
+* { box-sizing:border-box; }
+html, body {
+    margin:0;
+    padding:0;
+    font-family:'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100%;
+}
+h1,h2,h3,h4 { margin:.55em 0 .35em; font-weight:600; letter-spacing:.5px; }
+p { line-height:1.5; }
+a { color:var(--primary); text-decoration:none; }
+a:hover { text-decoration:underline; }
+
+/* ==========================================================================
+   2) LAYOUT: HEADER, NAVEGACIÓN, CONTENEDOR
+   ========================================================================== */
+.app-header {
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top:0;
+    z-index:100;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Barra superior con título y logo */
+.logo-bar {
+    display:flex; align-items:center; gap:.9rem;
+    padding:.75rem 1.1rem;
+    flex-wrap:wrap;
+}
+.logo-bar h1 {
+    font-size:1.8rem;
+    letter-spacing:1px;
+}
+
+/* Navegación principal */
+.main-nav {
+    display:flex; gap:.6rem; flex-wrap:wrap;
+    padding:.6rem 1rem .8rem;
+    background:var(--bg-soft);
+    border-top:1px solid var(--border);
+}
+.main-nav a, .main-nav button.btn {
+    padding:.7rem 1rem;
+    border-radius:var(--radius);
+    font-size:1rem;
+    font-weight:600;
+    background:transparent;
+    border:1px solid transparent;
+    line-height:1.2;
+    cursor:pointer;
+    letter-spacing:.5px;
+    display:inline-flex; align-items:center; gap:.5rem;
+    transition:var(--transition);
+}
+.main-nav a.active, .main-nav a:hover, .main-nav button.btn:hover {
+    background:var(--primary);
+    color:#fff;
+    text-decoration:none;
+}
+
+/* Contenedor de contenido principal */
+.content { max-width:1250px; margin:0 auto; padding:1.1rem 1rem 2.5rem; }
+
+/* ==========================================================================
+   3) COMPONENTES BASE: BOTONES, PANELES, CARDS, TABLAS, BADGES, FILTROS, TOASTS
+   ========================================================================== */
+/* Botones */
+.btn {
+    padding:.6rem .95rem;
+    border-radius:var(--radius);
+    border:1px solid var(--border);
+    background:var(--panel);
+    color:var(--text);
+    font-size:.8rem;
+    font-weight:600;
+    cursor:pointer;
+    display:inline-flex; align-items:center; gap:.45rem;
+    transition:var(--transition);
+    position:relative;
+}
+.btn.small { padding:.4rem .7rem; font-size:.7rem; }
+.btn.primary { background:var(--primary); border-color:var(--primary); color:#fff; }
+.btn.primary:hover { background:var(--primary-hover); }
+.btn.accent { background:var(--accent); border-color:var(--accent); color:#fff; }
+.btn.accent:hover { background:var(--accent-hover); }
+.btn.danger { background:var(--danger); border-color:var(--danger); color:#fff; }
+.btn.danger:hover { background:var(--danger-hover); }
+.btn.outline { background:transparent; }
+.btn.outline:hover { background:var(--bg-soft); }
+
+/* Paneles */
+.panel {
+    background: var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:1rem 1.25rem;
+    margin-bottom:1.2rem;
+    box-shadow:var(--shadow-sm);
+}
+
+/* Hero destacado */
+.hero {
+    background: var(--gradient);
+    color:#fff;
+    padding:1.4rem 1.7rem;
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+}
+
+/* Grillas y tarjetas */
+.grid { display:grid; gap:1rem; }
+.grid.responsive { grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); }
+
+.product-card, .generic-card {
+    background: var(--bg-alt);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    display:flex; flex-direction:column;
+    box-shadow:var(--shadow-sm);
+    overflow:hidden;
+    transition:var(--transition);
+    position:relative;
+}
+.product-card:hover { transform:translateY(-4px); box-shadow:var(--shadow); }
+.product-card img { width:100%; height:170px; object-fit:contain; background:#fff; }
+.product-card .body {
+    padding:.75rem .85rem 1rem;
+    display:flex; flex-direction:column; gap:.45rem;
+    flex:1;
+}
+.price { font-weight:700; font-size:.9rem; color:var(--primary); }
+
+/* Tablas */
+.table { width:100%; border-collapse:collapse; font-size:.100rem; }
+.table th, .table td {
+    padding:.55rem .6rem; border:1px solid var(--border); text-align:left; vertical-align:top;
+}
+.table th {
+    background: var(--bg-soft);
+    position:sticky; top:0;
+}
+
+/* Badges */
+.badge {
+    display:inline-block; padding:.3rem .7rem;
+    font-size:.7rem; font-weight:700; letter-spacing:.6px;
+    border-radius:999px; background:var(--primary); color:#fff;
+    text-transform:uppercase;
+}
+.badge.warn { background:var(--warn); }
+.badge.danger { background:var(--danger); }
+.badge.success { background:var(--success); }
+.badge.accent { background:var(--accent); }
+
+/* Filtros (chips) */
+.filter-bar { display:flex; flex-wrap:wrap; gap:.6rem; margin:.4rem 0 .9rem; }
+.filter-pill {
+    background:var(--bg-soft); color:var(--text-soft);
+    padding:.4rem .7rem; border-radius:999px; font-size:.7rem;
+    display:inline-flex; align-items:center; gap:.35rem;
+}
+.filter-pill button {
+    background:transparent; border:none; cursor:pointer; color:var(--danger);
+    font-size:.7rem; line-height:1;
+}
+
+/* Toasts de notificación */
+.toast-container {
+    position:fixed; bottom:1rem; right:1rem;
+    display:grid; gap:.55rem; z-index:3000; max-width:340px;
+}
+.toast {
+    background: var(--panel);
+    border:1px solid var(--border);
+    padding:.6rem .75rem;
+    border-radius:var(--radius);
+    font-size:.75rem; line-height:1.3;
+    box-shadow:var(--shadow-sm);
+    animation:fadeSlide .35s ease;
+}
+.toast.success { border-color:var(--success); }
+.toast.error { border-color:var(--danger); }
+.toast.warn { border-color:var(--warn); }
+@keyframes fadeSlide {
+    from { transform:translateY(8px); opacity:0; }
+    to { transform:translateY(0); opacity:1; }
+}
+
+/* ==========================================================================
+   4) FORMULARIOS, MODALES Y UTILIDADES
+   ========================================================================== */
+/* Controles de formulario */
+input, select, textarea {
+    font:inherit;
+    padding:.55rem .65rem;
+    border-radius:var(--radius);
+    border:1px solid var(--border);
+    background:var(--bg-alt);
+    color:var(--text);
+    outline:0;
+    transition:var(--transition);
+}
+input:focus, select:focus, textarea:focus {
+    border-color:var(--primary);
+    box-shadow: var(--focus-ring);
+}
+
+/* Layouts de formulario */
+.form-grid {
+    display:grid; gap:.9rem;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+}
+.form-rows { display: grid; gap: .5rem; }
+.form-row { display: grid; grid-template-columns: 1fr 320px; align-items: start; gap: .8rem; }
+.form-row > label { justify-self: end; font-weight: 600; }
+.form-actions { display: flex; gap: .6rem; justify-content: flex-end; margin-top: .5rem; }
+
+/* Modales */
+.modal-backdrop {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,.55);
+    display:flex; align-items:center; justify-content:center;
+    z-index:4000; padding:1rem;
+}
+.modal {
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:var(--radius); width:min(95%,620px);
+    max-height:90vh; overflow:auto;
+    box-shadow:var(--shadow);
+    padding:1.1rem 1.2rem;
+    display:flex; flex-direction:column; gap:1rem;
+}
+.modal header { display:flex; justify-content:space-between; align-items:center; }
+.modal footer { display:flex; gap:.6rem; flex-wrap:wrap; }
+
+/* Utilidades */
+.hidden { display:none !important; }
+.flex-row { display:flex; gap:.7rem; flex-wrap:wrap; }
+.flex-col { display:flex; flex-direction:column; gap:.6rem; }
+.content.narrow { max-width: 500px; }
+
+/* ==========================================================================
+   5) FOOTER, PROGRESO Y ESTADOS DE ETAPAS
+   ========================================================================== */
+.footer {
+    text-align:center; font-size:.75rem; padding:1.2rem .8rem;
+    border-top:1px solid var(--border); margin-top:2rem;
+    background:var(--bg-alt); color:var(--text-soft);
+}
+
+.progress-bar {
+    height:6px; background:var(--bg-soft);
+    border-radius:999px; overflow:hidden; margin:.4rem 0 1rem;
+    position:relative;
+}
+.progress-bar span {
+    display:block; height:100%; background:var(--primary);
+    width:0; transition:width .5s ease;
+}
+
+.stage-status {
+    display:grid; gap:.5rem;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+}
+.stage-card {
+    background:var(--bg-alt);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:.6rem .7rem;
+    font-size:.7rem;
+    display:flex; flex-direction:column; gap:.4rem;
+}
+.stage-card.done { border-color:var(--success); }
+.stage-card.pending { border-color:var(--warn); }
+
+/* ==========================================================================
+   6) RESPONSIVE GLOBAL
+   ========================================================================== */
+@media (max-width:820px) {
+    .main-nav { overflow-x:auto; }
+    .product-card img { height:150px; }
+    .form-grid { grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); }
+}
+
+/* ==========================================================================
+   7) HOME (index.html): BIENVENIDA, ESPECIFICACIONES, ACCIONES, SESIÓN
+   ========================================================================== */
+/* Bloque de bienvenida */
+.welcome-section {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 2rem;
+}
+.welcome-section h1 {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary); /* Nota: si no existe token en :root, hereda color */
+}
+.welcome-section p {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Especificaciones del proyecto */
+.specs-section {
+    background-color: var(--bg-alt);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 2.5rem 1rem;
+    margin-top: 3rem;
+}
+.specs-section h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+/* Lista de especificaciones en grid adaptable */
+.specs-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+    list-style: none;
+    padding: 0;
+}
+.specs-list li {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Acciones principales en home */
+.main-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+.main-actions .btn {
+    padding: 2rem 5rem;
+    font-size: 15rem; /* Tamaño según fuente original del proyecto */
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+.main-actions .btn:hover { transform: translateY(-2px); }
+
+/* Estado de sesión en home */
+.session-status {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+.session-status span { color: red; }
+
+/* Ajustes responsive del home */
+@media (max-width: 768px) {
+    .welcome-section h1 { font-size: 1.8rem; }
+    .welcome-section p { font-size: 1rem; }
+    .specs-section { padding: 1.5rem 0.5rem; }
+}
+
+/* ==========================================================================
+   8) LOGIN (login.html)
+   ========================================================================== */
+/* Contenedor de la página de autenticación */
+.auth-page {}
+
+/* Separación entre paneles de registro/login */
+.auth-page .panel + .panel { margin-top: 1.1rem; }
+
+/* Acciones centradas bajo el formulario de login */
+.session-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+/* Bloque de salida de autenticación en monoespaciado */
+.code-block {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .85rem 1rem;
+    margin-top: .9rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: .82rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Ajustes específicos del layout de formularios en login */
+.auth-page .form-rows { gap: .7rem; }
+.auth-page .form-row { grid-template-columns: 1fr 320px; }
+@media (max-width: 640px) {
+    .auth-page .form-row { grid-template-columns: 1fr; }
+    .auth-page .form-row > label { justify-self: start; }
+}
+
+/* ==========================================================================
+   9) CARRITO (Cart.html)
+   ========================================================================== */
+/* Mensaje de estado del carrito */
+.status-line{
+    margin:.35rem 0 .6rem;
+    font-size:.9rem;
+    color:var(--text-soft);
+}
+
+/* Contenedor de acciones bajo la tabla del carrito */
+.cart-actions{
+    margin-top:.8rem;
+    align-items:center; /* usa junto con .flex-row existente */
+}
+
+/* Logo en la barra superior */
+.site-logo{
+    height:32px;
+    width:auto;
+    object-fit:contain;
+    display:inline-block;
+}
+
+/* ==========================================================================
+   10) CATALOGO (catalog.html)
+   ========================================================================== */
+
+/* Ocultar selector de tipo por defecto (lo muestra el JS según categoría) */
+#typeField { display: none; }
+
+/* Paginador bajo el grid */
+.catalog-pager { margin-top: .6rem; }
+
+/* Formulario de filtros en línea */
+.inline-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem 1rem;
+    align-items: end;
+    margin: .6rem 0 1rem;
+}
+.inline-form .form-field {
+    display: grid;
+    gap: .35rem;
+    font-size: .9rem;
+}
+
+/* Logo en barra superior, en caso de no estar ya definido */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   11) ADMIN (admin.html)
+   ========================================================================== */
+/* Grilla de tarjetas del resumen */
+.admin-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1rem;
+}
+
+/* Tarjetas de resumen (usuarios, órdenes, etc.) */
+.admin-summary-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .8rem;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Formularios inline para administración */
+.inline-form.admin-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem 1rem;
+    align-items: end;
+    margin: .6rem 0 1rem;
+}
+
+/* Rejilla de productos CRUD */
+#adminProductsGrid {
+    margin-top: 1rem;
+}
+
+/* Estado o línea informativa */
+.status-line {
+    margin: .35rem 0 .6rem;
+    font-size: .9rem;
+    color: var(--text-soft);
+}
+
+/* Logo del header administrativo */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   12) CHECKOUT (checkout.html)
+   ========================================================================== */
+
+/* Formulario del checkout */
+#checkoutForm {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Campos del formulario */
+#checkoutForm .form-field {
+    display: grid;
+    gap: .3rem;
+    font-size: .95rem;
+}
+
+/* Contenedor principal más estrecho */
+main.content.narrow {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   13) COUNTRIES (countries.html)
+   ========================================================================== */
+
+/* Grilla de países */
+#countriesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 1.2rem;
+}
+
+/* Tarjetas individuales de país */
+.country-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-alt);
+    padding: .6rem;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    transition: transform .15s ease-in-out;
+}
+.country-card:hover {
+    transform: translateY(-3px);
+}
+
+/* Bandera y nombre */
+.country-flag {
+    width: 100%;
+    max-height: 100px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+}
+.country-name {
+    margin-top: .4rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: .9rem;
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   14) ORDER DELIVERY (order-delivery.html)
+   ========================================================================== */
+
+/* Formulario principal de entrega */
+#deliveryForm {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Campos del formulario */
+#deliveryForm .form-field {
+    display: grid;
+    gap: .3rem;
+    font-size: .95rem;
+}
+
+/* Contenedor principal más estrecho */
+main.content.narrow {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   15) ORDER DETAIL (order-detail.html)
+   ========================================================================== */
+
+/* Contenedor principal de detalle */
+#orderDetailContainer {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   16) ORDER LIST (order-list.html)
+   ========================================================================== */
+
+/* Contenedor principal de detalle */
+#orderDetailContainer {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   17) ORDER PACKAGING (order-packaging.html)
+   ========================================================================== */
+
+/* Formulario de empaque */
+#packagingForm {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Campos del formulario */
+#packagingForm .form-field {
+    display: grid;
+    gap: .3rem;
+    font-size: .95rem;
+}
+
+/* Contenedor principal más estrecho */
+main.content.narrow {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   18) ORDER PAYMENT (order-payment.html)
+   ========================================================================== */
+
+/* Formulario de pago */
+#paymentForm {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Campos del formulario */
+#paymentForm .form-field {
+    display: grid;
+    gap: .3rem;
+    font-size: .95rem;
+}
+
+/* Contenedor principal más estrecho */
+main.content.narrow {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   19) ORDER WAREHOUSE (order-warehouse.html)
+   ========================================================================== */
+
+/* Formulario del almacén */
+#warehouseForm {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Campos del formulario */
+#warehouseForm .form-field {
+    display: grid;
+    gap: .3rem;
+    font-size: .95rem;
+}
+
+/* Contenedor principal más estrecho */
+main.content.narrow {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Logo del encabezado */
+.site-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: inline-block;
+}

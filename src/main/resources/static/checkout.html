@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body class="theme-light">
+<header class="app-header">
+    <div class="logo-bar">
+        <h1>Procesar Compra</h1>
+        <img class="site-logo" src="images/International_Pokémon_logo.svg.png" alt="logo">
+    </div>
+    <nav class="main-nav">
+        <a href="index.html">Inicio</a>
+        <a href="catalog.html">Catálogo</a>
+        <a href="Cart.html">Carrito</a>
+        <a href="order-list.html">Mis Pedidos</a>
+        <span id="sessionCountdown" class="badge accent hidden" aria-live="polite">—</span>
+        <button id="renewBtn" class="btn outline hidden" type="button">Renovar</button>
+        <a href="login.html" id="loginLink">Login</a>
+        <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
+    </nav>
+</header>
+
+<main class="content narrow">
+    <section class="panel">
+        <h2>Datos del Cliente</h2>
+        <form id="checkoutForm" class="form-grid" autocomplete="off">
+            <label class="form-field">Nombre
+                <input name="customerName" required>
+            </label>
+            <label class="form-field">Email
+                <input type="email" name="customerEmail" required>
+            </label>
+            <label class="form-field">Teléfono
+                <input name="customerPhone">
+            </label>
+            <label class="form-field">Dirección 1
+                <input name="addressLine1" required>
+            </label>
+            <label class="form-field">Dirección 2
+                <input name="addressLine2">
+            </label>
+            <label class="form-field">País
+                <input name="country" required>
+            </label>
+            <label class="form-field">Región
+                <input name="region">
+            </label>
+            <button class="btn primary" type="submit">Confirmar Pedido</button>
+        </form>
+    </section>
+</main>
+
+<footer class="footer">Checkout</footer>
+<div id="toastContainer" class="toast-container"></div>
+
+<script type="module">
+    import { initTheme, showToast } from './js/util.js';
+    import { hydrateSessionUI } from './js/session.js';
+    import API from './js/api.js';
+    import { requireAuthOnLoad } from './js/auth-required.js';
+
+    initTheme();
+    hydrateSessionUI();
+
+    if (!requireAuthOnLoad()) {
+        // redirige a login
+    } else {
+        const form = document.getElementById('checkoutForm');
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+
+            const token = API.token();
+            if (!token) {
+                showToast('Debes iniciar sesión para confirmar el pedido.', 'error');
+                setTimeout(() => (location.href = 'login.html'), 600);
+                return;
+            }
+
+            const fd = new FormData(form);
+            const body = {
+                customerName: fd.get('customerName'),
+                customerEmail: fd.get('customerEmail'),
+                customerPhone: fd.get('customerPhone'),
+                addressLine1: fd.get('addressLine1'),
+                addressLine2: fd.get('addressLine2'),
+                country: fd.get('country'),
+                region: fd.get('region')
+            };
+
+            try {
+                const r = await API.post('/api/orders/checkout', body);
+                showToast('Pedido creado', 'success');
+                setTimeout(() => (location.href = `order-detail.html?orderId=${r.orderId}`), 600);
+            } catch {}
+        };
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Países</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body class="theme-light">
+<header class="app-header">
+    <div class="logo-bar">
+        <h1>Países</h1>
+        <img class="site-logo" src="images/International_Pokémon_logo.svg.png" alt="logo">
+    </div>
+    <nav class="main-nav">
+        <a href="index.html">Inicio</a>
+        <a href="catalog.html">Catálogo</a>
+        <a href="Cart.html">Carrito</a>
+        <a href="countries.html" class="active">Países</a>
+        <a href="order-list.html">Mis Pedidos</a>
+        <a href="admin.html" data-requires-role="ADMIN">Admin</a>
+        <span id="sessionCountdown" class="badge accent hidden" aria-live="polite">—</span>
+        <button id="renewBtn" class="btn outline hidden" type="button">Renovar</button>
+        <a href="login.html" id="loginLink">Login</a>
+        <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
+    </nav>
+</header>
+
+<main class="content">
+    <section class="panel">
+        <h2>Lista de Países (RestCountries)</h2>
+        <div id="countriesGrid" class="grid responsive"></div>
+    </section>
+</main>
+
+<footer class="footer">Base de datos de países consumida dinámicamente.</footer>
+<div id="toastContainer" class="toast-container"></div>
+
+<script type="module">
+    import { initTheme } from './js/util.js';
+    import { hydrateSessionUI } from './js/session.js';
+    import { loadCountriesPage } from './js/products.js';
+    initTheme();
+    hydrateSessionUI();
+    loadCountriesPage();
+</script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inicio | Portal PokeVentas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Estilos base -->
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/logo.css">
+</head>
+
+<body class="dark">
+<header class="app-header">
+    <div class="logo-bar">
+        <h1>Inicio</h1>
+        <img class="site-logo" src="images/International_Pokémon_logo.svg.png" alt="logo">
+    </div>
+    <nav class="main-nav" aria-label="Navegación principal">
+        <a href="index.html" class="active">Inicio</a>
+        <a href="catalog.html">Catálogo</a>
+        <a href="Cart.html">Carrito</a>
+        <a href="admin.html" data-requires-role="ADMIN">Admin</a>
+        <a href="login.html">Login</a>
+    </nav>
+</header>
+
+<main class="content home">
+    <section class="panel welcome-section">
+        <h2>Bienvenidos</h2>
+        <p>
+            Bienvenido al portal de PokeVentas, un sistema de demostración para gestión y compra
+            de artículos Pokémon. Aquí podrás explorar el catálogo, agregar productos al carrito
+            y realizar compras seguras.
+        </p>
+    </section>
+
+    <section class="panel specs-section">
+        <h2>Especificaciones del Proyecto</h2>
+        <ul>
+            <li>Framework base: HTML5 + CSS modular + JS ES6</li>
+            <li>Estructura adaptable y responsive</li>
+            <li>Separación entre contenido y diseño</li>
+            <li>Estilo global gestionado en <code>index.css</code></li>
+        </ul>
+    </section>
+
+    <section class="session-status">
+        <label for="session">Sesión:</label>
+        <span id="session" class="session-label unauth">No autenticado</span>
+    </section>
+
+    <div class="actions">
+        <button class="btn primary">Explorar catálogo</button>
+        <button class="btn outline">Ver carrito</button>
+    </div>
+</main>
+
+<footer class="footer">&copy; 2025 Portal PokeVentas</footer>
+
+<script type="module">
+    import { initTheme } from './js/util.js';
+    import { hydrateSessionUI } from './js/session.js';
+    initTheme();
+    hydrateSessionUI();
+</script>
+</body>
+</html>

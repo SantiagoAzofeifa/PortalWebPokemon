@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Entrega Pedido</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body class="theme-light">
+<header class="app-header">
+    <div class="logo-bar">
+        <h1>Entrega</h1>
+        <img class="site-logo" src="images/International_Pokémon_logo.svg.png" alt="logo">
+    </div>
+    <nav class="main-nav">
+        <a href="index.html">Inicio</a>
+        <a href="#" id="orderLink">Volver Detalle</a>
+    </nav>
+</header>
+
+<main class="content narrow">
+    <section class="panel">
+        <h2>Datos de Entrega</h2>
+        <form id="deliveryForm" class="form-grid">
+            <label class="form-field">Método
+                <select name="method">
+                    <option value="CORREO">Correo Postal</option>
+                    <option value="MENSAJERO">Mensajero</option>
+                    <option value="CASILLERO">Casillero</option>
+                </select>
+            </label>
+            <label class="form-field">Dirección
+                <input name="address">
+            </label>
+            <label class="form-field">Fecha Programada
+                <input type="datetime-local" name="scheduledDate">
+            </label>
+            <label class="form-field">Tracking
+                <input name="trackingCode">
+            </label>
+            <label class="form-field">Notas
+                <textarea name="notes" rows="2"></textarea>
+            </label>
+            <button class="btn success" type="submit">Guardar</button>
+        </form>
+    </section>
+</main>
+
+<footer class="footer">Etapa Entrega</footer>
+<div id="toastContainer" class="toast-container"></div>
+
+<script type="module">
+    import { initTheme } from './js/util.js';
+    import { hydrateSessionUI } from './js/session.js';
+    import { initDeliveryPage } from './js/orders.js';
+    initTheme();
+    hydrateSessionUI();
+    initDeliveryPage();
+</script>
+</body>
+</html>

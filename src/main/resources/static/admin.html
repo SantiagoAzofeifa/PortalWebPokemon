@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Administrador Completo</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body class="theme-light">
+<header class="app-header">
+    <div class="logo-bar">
+        <h1>Panel Administrador</h1>
+        <img class="site-logo" src="images/International_Pokémon_logo.svg.png" alt="logo">
+    </div>
+    <nav class="main-nav">
+        <a href="index.html">Inicio</a>
+        <a href="catalog.html">Catálogo</a>
+        <a href="Cart.html">Carrito</a>
+        <a href="countries.html">Países</a>
+        <a href="order-list.html">Mis Pedidos</a>
+        <a href="admin.html" class="active" data-requires-role="ADMIN">Admin</a>
+        <span id="sessionCountdown" class="badge accent hidden" aria-live="polite">—</span>
+        <button id="renewBtn" class="btn outline hidden" type="button">Renovar</button>
+        <a href="login.html" id="loginLink">Login</a>
+        <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
+    </nav>
+</header>
+
+<main class="content">
+
+    <!-- Resumen -->
+    <section class="panel">
+        <h2>Resumen</h2>
+        <div class="admin-summary-grid">
+            <div class="admin-summary-card">
+                <strong>Usuarios</strong>
+                <p id="dashUsers" class="status-line">—</p>
+            </div>
+            <div class="admin-summary-card">
+                <strong>Órdenes (Usuario actual)</strong>
+                <p id="dashOrders" class="status-line">—</p>
+            </div>
+            <div class="admin-summary-card">
+                <strong>P-S Pendientes (Global)</strong>
+                <p id="dashPsPending" class="status-line">—</p>
+            </div>
+            <div class="admin-summary-card">
+                <strong>Timeout Sesión (s)</strong>
+                <p id="dashTimeout" class="status-line">—</p>
+            </div>
+            <div class="admin-summary-card">
+                <strong><a href="all-orders.html">Administrar todas las ordenes</a></strong>
+                <p  class="status-line">—</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Control Timeout -->
+    <section class="panel">
+        <h2>Control de Sesión</h2>
+        <form id="sessionTimeoutForm" class="inline-form admin-form">
+            <label class="form-field">Nuevo Timeout (seg)
+                <input type="number" id="newTimeout" min="30" value="180">
+            </label>
+            <button class="btn primary" type="submit">Actualizar</button>
+        </form>
+        <p class="status-line">Establece, por ejemplo, 180 para 3 minutos.</p>
+    </section>
+
+    <!-- Usuarios -->
+    <section class="panel">
+        <h2>Usuarios</h2>
+        <form id="userFilterForm" class="inline-form admin-form">
+            <label class="form-field">Buscar
+                <input id="userQ" placeholder="usuario">
+            </label>
+            <label class="form-field">Rol
+                <select id="userRole">
+                    <option value="">(Todos)</option>
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="USER">USER</option>
+                </select>
+            </label>
+            <button class="btn outline" type="submit">Filtrar</button>
+            <button class="btn small danger outline" type="button" id="userClear">Limpiar</button>
+            <button class="btn accent" type="button" data-modal-open="modalUserNew">Nuevo Usuario</button>
+        </form>
+        <table class="table">
+            <thead>
+            <tr><th>ID</th><th>Usuario</th><th>Rol</th><th>Activo</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="userBody"></tbody>
+        </table>
+    </section>
+
+    <!-- CRUD Productos -->
+    <section class="panel">
+        <h2>CRUD Productos Internos (Opcional)</h2>
+        <form id="productForm" class="form-grid">
+            <input type="hidden" id="prodId" name="id">
+            <label class="form-field">Nombre
+                <input name="name" id="prodName" required>
+            </label>
+            <label class="form-field">Precio
+                <input name="price" id="prodPrice" type="number" step="0.01" min="0" required>
+            </label>
+            <label class="form-field">Categoría
+                <select name="category" id="prodCategory">
+                    <option value="POKEMON">POKEMON</option>
+                    <option value="SPECIES">SPECIES</option>
+                    <option value="ITEMS">ITEMS</option>
+                    <option value="GENERATIONS">GENERATIONS</option>
+                </select>
+            </label>
+            <label class="form-field">Imagen URL
+                <input name="imageUrl" id="prodImage" placeholder="https://...png">
+            </label>
+            <label class="form-field">Descripción
+                <textarea name="description" id="prodDesc" rows="2"></textarea>
+            </label>
+            <label class="form-field">País Origen
+                <input name="countryOfOrigin">
+            </label>
+            <label class="form-field">Países Disponibles (CSV)
+                <input name="availableCountriesCsv" placeholder="US,CA,MX">
+            </label>
+            <label class="form-field">Países Prohibidos (CSV)
+                <input name="bannedCountriesCsv" placeholder="CU,IR,...">
+            </label>
+            <div class="flex-row">
+                <button class="btn success" type="submit">Guardar</button>
+                <button class="btn outline" type="button" id="resetProdBtn">Limpiar</button>
+            </div>
+        </form>
+        <div id="adminProductsGrid" class="grid responsive"></div>
+    </section>
+</main>
+
+<footer class="footer">Panel administrativo extendido</footer>
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- Modal Nuevo Usuario -->
+<div id="modalUserNew" data-title="Nuevo Usuario" class="hidden">
+    <form id="userNewForm" class="form-grid">
+        <label class="form-field">Usuario
+            <input name="username" required minlength="3">
+        </label>
+        <label class="form-field">Contraseña
+            <input type="password" name="password" required minlength="4">
+        </label>
+        <label class="form-field">Rol
+            <select name="role">
+                <option value="USER">USER</option>
+                <option value="ADMIN">ADMIN</option>
+            </select>
+        </label>
+        <button class="btn success" type="submit">Crear</button>
+    </form>
+</div>
+
+<script type="module">
+    import { initTheme } from './js/util.js';
+    import { hydrateSessionUI } from './js/session.js';
+    import './js/modal.js';
+    import './js/admin-extended.js';
+    initTheme();
+    hydrateSessionUI();
+</script>
+</body>
+</html>

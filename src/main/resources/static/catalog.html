@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo Unificado</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body class="theme-light">
+<header class="app-header">
+    <div class="logo-bar">
+        <h1>Catálogo</h1>
+        <img class="site-logo" src="images/International_Pokémon_logo.svg.png" alt="logo">
+    </div>
+    <nav class="main-nav">
+        <a href="index.html">Inicio</a>
+        <a href="catalog.html" class="active">Catálogo</a>
+        <a href="Cart.html">Carrito</a>
+        <a href="countries.html">Países</a>
+        <a href="order-list.html">Mis Pedidos</a>
+        <a href="admin.html" data-requires-role="ADMIN">Admin</a>
+        <span id="sessionCountdown" class="badge accent hidden" aria-live="polite">—</span>
+        <button id="renewBtn" class="btn outline hidden" type="button">Renovar</button>
+        <a href="login.html" id="loginLink">Login</a>
+        <button id="logoutBtn" class="btn danger outline hidden">Salir</button>
+    </nav>
+</header>
+
+<main class="content">
+    <section class="panel">
+        <h2>Explorar y comprar</h2>
+
+        <form id="filterForm" class="inline-form">
+            <label class="form-field">Categoría
+                <select id="categorySelect">
+                    <option value="ALL">(Todas)</option>
+                    <option value="POKEMON">Pokémon</option>
+                    <option value="ITEM">Items</option>
+                    <option value="GAME">Games</option>
+                </select>
+            </label>
+
+            <label class="form-field" id="typeField">Tipo (solo Pokémon)
+                <select id="typeSelect"></select>
+            </label>
+
+            <label class="form-field">Buscar
+                <input id="queryInput" placeholder="pikachu, potion, red, ...">
+            </label>
+
+            <label class="form-field">Página
+                <input id="pageInput" type="number" min="0" value="0">
+            </label>
+
+            <label class="form-field">Size
+                <input id="sizeInput" type="number" min="1" max="50" value="12">
+            </label>
+
+            <button class="btn primary" type="submit">Filtrar</button>
+        </form>
+
+        <div id="productsGrid" class="grid responsive" aria-live="polite"></div>
+
+        <div class="flex-row catalog-pager">
+            <button id="prevPage" class="btn small outline">Anterior</button>
+            <span id="pageInfo" style="font-size:.75rem;">—</span>
+            <button id="nextPage" class="btn small outline">Siguiente</button>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">Catálogo unificado (Pokémon, Items, Games)</footer>
+<div id="toastContainer" class="toast-container"></div>
+
+<script type="module">
+    import { initTheme } from './js/util.js';
+    import { hydrateSessionUI } from './js/session.js';
+    import { initCatalogPage } from './js/products.js';
+    initTheme();
+    hydrateSessionUI();
+    initCatalogPage();
+</script>
+</body>
+</html>
