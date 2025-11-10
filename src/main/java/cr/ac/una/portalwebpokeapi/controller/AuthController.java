@@ -7,6 +7,7 @@ import cr.ac.una.portalwebpokeapi.model.UserRole;
 import cr.ac.una.portalwebpokeapi.repository.LoginAuditRepository;
 import cr.ac.una.portalwebpokeapi.repository.UserRepository;
 import cr.ac.una.portalwebpokeapi.service.SessionConfigService;
+import cr.ac.una.portalwebpokeapi.service.config.CountryConfigService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
@@ -16,54 +17,34 @@ import java.util.Map;
 
 /**
  * Controlador REST para autenticación y gestión de sesión.
- *
- * Base: /api/auth
- * Funciones:
- *  - Registro de usuarios (hash con BCrypt).
- *  - Login y creación de token de sesión en memoria.
- *  - Logout e invalidación de token.
- *  - Renovación de sesión según timeout vigente.
- *  - Endpoint /me para obtener datos del sujeto autenticado.
- *
- * Seguridad:
- *  - El token se envía en el header "X-SESSION-TOKEN".
- *  - Las sesiones se gestionan en memoria mediante SessionManager.
- *  - El timeout vigente proviene de SessionConfigService.
  */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    private final UserRepository users;                 // Acceso a usuarios
-    private final LoginAuditRepository audits;          // Auditoría de eventos de login/logout
-    private final SessionManager sessions;              // Gestión de tokens y expiraciones
-    private final SessionConfigService sessionCfg;      // Provee timeout actual de sesión
+    private final UserRepository users;
+    private final LoginAuditRepository audits;
+    private final SessionManager sessions;
+    private final SessionConfigService sessionCfg;
+    private final CountryConfigService countryCfg;
 
     public AuthController(UserRepository users,
                           LoginAuditRepository audits,
                           SessionManager sessions,
-                          SessionConfigService sessionCfg) {
+                          SessionConfigService sessionCfg,
+                          CountryConfigService countryCfg) {
         this.users = users;
         this.audits = audits;
         this.sessions = sessions;
         this.sessionCfg = sessionCfg;
+        this.countryCfg = countryCfg;
     }
 
     /** Payload de registro. */
-    public record RegisterReq(String username, String password, String role){}
+    public record RegisterReq(String username, String password, String role, String countryCode){}
 
     /** Payload de login. */
     public record LoginReq(String username, String password){}
 
-    /**
-     * Registra un usuario nuevo.
-     * Valida usuario/contraseña requeridos y unicidad del username.
-     * La contraseña se almacena con hash BCrypt.
-     *
-     * POST /api/auth/register
-     *
-     * @param req body con username, password y role opcional ("ADMIN" para admin).
-     * @return 200 {"ok":true} o 400 con {"error":...}
-     */
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterReq req){
         if (req.username()==null || req.username().isBlank()
@@ -73,28 +54,26 @@ public class AuthController {
         if (users.existsByUsername(req.username())) {
             return ResponseEntity.badRequest().body(Map.of("error","Usuario ya existe"));
         }
+        if (req.countryCode()==null || req.countryCode().isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error","País requerido"));
+        }
+        String cc = req.countryCode().trim().toUpperCase();
+        if (!countryCfg.allowed().contains(cc)) {
+            return ResponseEntity.badRequest().body(Map.of("error","País no permitido: " + cc));
+        }
 
         User u = new User();
-        u.setUsername(req.username());
-        // Hash de contraseña con BCrypt y salt generado
+        u.setUsername(req.username().trim());
         u.setPasswordHash(BCrypt.hashpw(req.password(), BCrypt.gensalt()));
         if ("ADMIN".equalsIgnoreCase(req.role())) {
             u.setRole(UserRole.ADMIN);
         }
+        u.setCountryCode(cc);
         users.save(u);
 
         return ResponseEntity.ok(Map.of("ok", true));
     }
 
-    /**
-     * Autentica credenciales y crea una sesión con token UUID.
-     * Rechaza si el usuario no existe, está inactivo o el hash no coincide.
-     *
-     * POST /api/auth/login
-     *
-     * @param req body con username y password en texto plano.
-     * @return 200 {token, username, role, expiresIn} o 401 {"error":"Credenciales inválidas"}.
-     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginReq req) {
         User u = users.findByUsername(req.username()).orElse(null);
@@ -102,7 +81,7 @@ public class AuthController {
             return ResponseEntity.status(401).body(Map.of("error","Credenciales inválidas"));
         }
 
-        int ttl = sessionCfg.currentTimeoutSeconds(); // timeout efectivo
+        int ttl = sessionCfg.currentTimeoutSeconds();
         String token = sessions.create(String.valueOf(u.getId()), u.getUsername(), u.getRole().name());
         audits.save(audit(u.getId(), u.getUsername(), "LOGIN"));
 
@@ -114,15 +93,6 @@ public class AuthController {
         ));
     }
 
-    /**
-     * Cierra sesión si el token es válido, registrando LOGOUT.
-     * Idempotente a nivel de API.
-     *
-     * POST /api/auth/logout
-     *
-     * @param token header X-SESSION-TOKEN.
-     * @return 200 {"ok":true}
-     */
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("X-SESSION-TOKEN") String token){
         var d = sessions.get(token);
@@ -133,15 +103,6 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("ok", true));
     }
 
-    /**
-     * Renueva la sesión asociada al token, aplicando el timeout vigente.
-     * Falla con 401 si el token no existe o expiró.
-     *
-     * POST /api/auth/renew
-     *
-     * @param token header X-SESSION-TOKEN.
-     * @return 200 {"ok":true,"expiresIn":ttl} o 401 {"error":"Sesión expirada"}.
-     */
     @PostMapping("/renew")
     public ResponseEntity<?> renew(@RequestHeader("X-SESSION-TOKEN") String token){
         int ttl = sessionCfg.currentTimeoutSeconds();
@@ -151,15 +112,6 @@ public class AuthController {
                 : ResponseEntity.status(401).body(Map.of("error","Sesión expirada"));
     }
 
-    /**
-     * Devuelve información del sujeto autenticado.
-     * Incluye userId, username, role y fecha/hora de expiración.
-     *
-     * GET /api/auth/me
-     *
-     * @param token header X-SESSION-TOKEN.
-     * @return 200 con datos o 401 si el token no es válido.
-     */
     @GetMapping("/me")
     public ResponseEntity<?> me(@RequestHeader("X-SESSION-TOKEN") String token){
         var data = sessions.get(token);
@@ -174,13 +126,6 @@ public class AuthController {
         ));
     }
 
-    /**
-     * Construye una entidad de auditoría con marca temporal actual.
-     * @param userId id del usuario
-     * @param username nombre del usuario
-     * @param action "LOGIN" o "LOGOUT"
-     * @return entidad lista para persistir
-     */
     private LoginAudit audit(Long userId, String username, String action){
         LoginAudit a = new LoginAudit();
         a.setUserId(userId);
@@ -189,4 +134,4 @@ public class AuthController {
         a.setTimestamp(Instant.now());
         return a;
     }
-}
+}   

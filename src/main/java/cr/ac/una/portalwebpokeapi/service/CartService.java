@@ -12,16 +12,6 @@ import java.util.*;
 
 /**
  * Servicio de carrito.
- *
- * Responsabilidades:
- * - Crear/obtener carrito por usuario.
- * - Agregar ítems desde fuentes externas (PokeAPI) resolviendo categoría y precio.
- * - Actualizar cantidades, eliminar ítems y limpiar carrito.
- * - Armar una vista enriquecida del carrito con nombres/imagenes.
- *
- * Concurrencia y consistencia:
- * - Se usan transacciones para operaciones de escritura y limpieza.
- * - Las lecturas “view” son readOnly y se apoyan en consultas derivadas.
  */
 @Service
 @RequiredArgsConstructor
@@ -29,12 +19,9 @@ public class CartService {
 
     private final CartRepository cartRepo;
     private final CartItemRepository itemRepo;
-    private final PokeApiService poke; // Adaptador a PokeAPI usado por PokeCatalogService.*
+    private final PokeApiService poke;
+    private final CountryGuard countryGuard; // NUEVO
 
-    /**
-     * Obtiene el carrito del usuario o lo crea si no existe.
-     * Envuelve creación en TX para evitar condiciones de carrera.
-     */
     @Transactional
     public Cart getOrCreate(Long userId) {
         return cartRepo.findByUserId(userId).orElseGet(() -> {
@@ -44,15 +31,6 @@ public class CartService {
         });
     }
 
-    /**
-     * Agrega un ítem al carrito según categoría y nameOrId.
-     * Resuelve productId y precio consultando PokeAPI.
-     * Si el ítem ya existe en el carrito (misma categoría+productId), acumula cantidad.
-     *
-     * @param category POKEMON | ITEM | GAME (insensible a mayúsculas)
-     * @param nameOrId nombre o id según la API de origen
-     * @param qty cantidad mínima 1
-     */
     @Transactional
     public void addCatalog(Long userId, String category, String nameOrId, int qty) {
         if (qty < 1) qty = 1;
@@ -62,13 +40,14 @@ public class CartService {
         Long pid;
         double price;
 
-        // Resuelve id y precio según categoría
         switch (cat) {
             case "POKEMON" -> {
                 Map<String,Object> detail = poke.getPokemon(nameOrId.toLowerCase());
                 if (detail == null || detail.get("id") == null)
                     throw new IllegalArgumentException("Pokémon no encontrado");
                 pid = ((Number) detail.get("id")).longValue();
+                // Validación por país con reglas
+                countryGuard.assertUserCanBuyDynamic(userId, pid, "POKEMON");
                 price = PokeCatalogService.priceFromPokemonDetail(detail);
             }
             case "ITEM" -> {
@@ -76,6 +55,7 @@ public class CartService {
                 if (detail == null || detail.get("id") == null)
                     throw new IllegalArgumentException("Item no encontrado");
                 pid = ((Number) detail.get("id")).longValue();
+                countryGuard.assertUserCanBuyDynamic(userId, pid, "ITEM");
                 price = PokeCatalogService.priceFromItemDetail(detail);
             }
             case "GAME" -> {
@@ -83,12 +63,12 @@ public class CartService {
                 if (detail == null || detail.get("id") == null)
                     throw new IllegalArgumentException("Juego no encontrado");
                 pid = ((Number) detail.get("id")).longValue();
+                countryGuard.assertUserCanBuyDynamic(userId, pid, "GAME");
                 price = PokeCatalogService.priceFromVersion(detail);
             }
             default -> throw new IllegalArgumentException("Categoría inválida: " + category);
         }
 
-        // Busca línea existente por (productId + productCategory) para acumular
         CartItem existing = itemRepo.findByCartId(cart.getId()).stream()
                 .filter(ci -> ci.getProductId().equals(pid) && cat.equals(ci.getProductCategory()))
                 .findFirst().orElse(null);
@@ -102,15 +82,11 @@ public class CartService {
             it.setProductId(pid);
             it.setProductCategory(cat);
             it.setQuantity(qty);
-            it.setUnitPrice(price); // se congela el precio al momento de agregar
+            it.setUnitPrice(price);
             itemRepo.save(it);
         }
     }
 
-    /**
-     * Actualiza la cantidad de un ítem del carrito. Verifica pertenencia.
-     * Lanza SecurityException("FORBIDDEN") si el ítem no es del carrito del usuario.
-     */
     @Transactional
     public void updateQty(Long userId, Long itemId, int qty) {
         if (qty < 1) qty = 1;
@@ -123,9 +99,6 @@ public class CartService {
         itemRepo.save(it);
     }
 
-    /**
-     * Elimina una línea del carrito. Verifica pertenencia.
-     */
     @Transactional
     public void removeItem(Long userId, Long itemId) {
         Cart cart = getOrCreate(userId);
@@ -136,23 +109,12 @@ public class CartService {
         itemRepo.delete(it);
     }
 
-    /**
-     * Limpia todas las líneas del carrito del usuario.
-     */
     @Transactional
     public void clear(Long userId) {
         Cart cart = getOrCreate(userId);
         itemRepo.deleteByCartId(cart.getId());
     }
 
-    /**
-     * Devuelve una vista enriquecida del carrito:
-     * - items con name e image resueltos desde PokeAPI
-     * - totales calculados
-     *
-     * La resolución de nombres/imagenes está en try/catch blando para no
-     * romper la respuesta si la API externa falla.
-     */
     @Transactional(readOnly = true)
     public Map<String,Object> view(Long userId) {
         Cart cart = getOrCreate(userId);
@@ -162,7 +124,7 @@ public class CartService {
 
         for (CartItem ci : items) {
             String cat = ci.getProductCategory();
-            String name = "#" + ci.getProductId(); // fallback
+            String name = "#" + ci.getProductId();
             String image = null;
 
             try {
@@ -185,11 +147,11 @@ public class CartService {
                         Map<String,Object> d = poke.getVersion(String.valueOf(ci.getProductId()));
                         if (d != null) {
                             name = String.valueOf(d.get("name"));
-                            image = null; // sin imagen en este flujo
+                            image = null;
                         }
                     }
                 }
-            } catch (Exception ignored) { /* evita romper la respuesta si falla la API */ }
+            } catch (Exception ignored) {}
 
             Map<String,Object> row = new LinkedHashMap<>();
             row.put("id", ci.getId());

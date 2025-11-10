@@ -12,16 +12,6 @@ import java.util.Map;
 
 /**
  * Servicio que orquesta el ciclo de vida de una orden.
- *
- * Funciones:
- * - Checkout desde el carrito del usuario → crea Order y OrderItems.
- * - Lectura detallada de una orden con sus submódulos (warehouse, packaging, delivery, payment).
- * - Upsert de cada submódulo de forma independiente.
- * - Eliminación en cascada de la orden y sus dependencias.
- *
- * Transaccionalidad:
- * - Métodos de mutación con @Transactional para garantizar consistencia.
- * - Lecturas marcadas como readOnly cuando aplica.
  */
 @Service
 public class OrderFlowService {
@@ -34,6 +24,7 @@ public class OrderFlowService {
     private final PaymentRepository paymentRepo;
     private final CartRepository cartRepo;
     private final CartItemRepository cartItemRepo;
+    private final CountryGuard countryGuard; // NUEVO
 
     public OrderFlowService(OrderRepository orderRepo,
                             OrderItemRepository orderItemRepo,
@@ -42,7 +33,8 @@ public class OrderFlowService {
                             DeliveryRepository deliveryRepo,
                             PaymentRepository paymentRepo,
                             CartRepository cartRepo,
-                            CartItemRepository cartItemRepo) {
+                            CartItemRepository cartItemRepo,
+                            CountryGuard countryGuard) {
         this.orderRepo = orderRepo;
         this.orderItemRepo = orderItemRepo;
         this.warehouseRepo = warehouseRepo;
@@ -51,16 +43,9 @@ public class OrderFlowService {
         this.paymentRepo = paymentRepo;
         this.cartRepo = cartRepo;
         this.cartItemRepo = cartItemRepo;
+        this.countryGuard = countryGuard;
     }
 
-    /**
-     * Crea una orden a partir del carrito del usuario.
-     * Copia todas las líneas del carrito a order_items y limpia el carrito.
-     *
-     * Reglas:
-     * - Requiere carrito existente y con ítems.
-     * - Inicializa campos base: userId, status (por defecto CREATED), createdAt.
-     */
     @Transactional
     public Order checkoutFromCart(Long userId, Order base) {
         Cart cart = cartRepo.findByUserId(userId).orElse(null);
@@ -68,7 +53,14 @@ public class OrderFlowService {
         List<CartItem> items = cartItemRepo.findByCartId(cart.getId());
         if (items.isEmpty()) throw new IllegalArgumentException("Carrito vacío");
 
-        // Sanitiza entidad base para persistencia nueva
+        // Validación por país de cada ítem (defensa en profundidad)
+        for (CartItem ci : items) {
+            String cat = ci.getProductCategory();
+            if ("POKEMON".equals(cat) || "ITEM".equals(cat) || "GAME".equals(cat)) {
+                countryGuard.assertUserCanBuyDynamic(userId, ci.getProductId(), cat);
+            }
+        }
+
         base.setId(null);
         base.setUserId(userId);
         if (base.getStatus() == null || base.getStatus().isBlank()) base.setStatus("CREATED");
@@ -76,7 +68,6 @@ public class OrderFlowService {
 
         Order saved = orderRepo.save(base);
 
-        // Copia cada línea del carrito a order_items congelando precio y cantidad
         for (CartItem ci : items) {
             OrderItem oi = new OrderItem();
             oi.setOrderId(saved.getId());
@@ -87,15 +78,10 @@ public class OrderFlowService {
             orderItemRepo.save(oi);
         }
 
-        // Limpia el carrito del usuario
         cartItemRepo.deleteByCartId(cart.getId());
         return saved;
     }
 
-    /**
-     * Devuelve vista agregada de una orden y sus módulos vinculados.
-     * Incluye: order, items, warehouse, packaging, delivery, payment.
-     */
     @Transactional(readOnly = true)
     public Map<String, Object> viewOrder(Long orderId) {
         Order o = orderRepo.findById(orderId)
@@ -116,27 +102,16 @@ public class OrderFlowService {
         return map;
     }
 
-    /**
-     * Lista órdenes por usuario.
-     */
     @Transactional(readOnly = true)
     public List<Order> listForUser(Long userId) {
         return orderRepo.findByUserId(userId);
     }
 
-    /**
-     * Lista órdenes para todos los usuarios.
-     */
     @Transactional(readOnly = true)
     public List<Order> listForAllUsers() {
         return orderRepo.findAll();
     }
 
-    /**
-     * Crea o actualiza Warehouse asociado a la orden.
-     * Si no existe, crea con orderId; si existe, actualiza campos.
-     * inDate por defecto a ahora si no viene informado.
-     */
     @Transactional
     public Warehouse upsertWarehouse(Long orderId, Warehouse data) {
         Warehouse w = warehouseRepo.findByOrderId(orderId).orElse(new Warehouse());
@@ -151,9 +126,6 @@ public class OrderFlowService {
         return warehouseRepo.save(w);
     }
 
-    /**
-     * Crea o actualiza Packaging asociado a la orden.
-     */
     @Transactional
     public Packaging upsertPackaging(Long orderId, Packaging data) {
         Packaging p = packagingRepo.findByOrderId(orderId).orElse(new Packaging());
@@ -166,9 +138,6 @@ public class OrderFlowService {
         return packagingRepo.save(p);
     }
 
-    /**
-     * Crea o actualiza Delivery asociado a la orden.
-     */
     @Transactional
     public Delivery upsertDelivery(Long orderId, Delivery data) {
         Delivery d = deliveryRepo.findByOrderId(orderId).orElse(new Delivery());
@@ -181,11 +150,6 @@ public class OrderFlowService {
         return deliveryRepo.save(d);
     }
 
-    /**
-     * Crea o actualiza Payment asociado a la orden.
-     * Calcula itemCount, grossAmount y netAmount en base a order_items.
-     * paidAt por defecto a ahora si no viene informado.
-     */
     @Transactional
     public Payment upsertPayment(Long orderId, Payment data) {
         Payment p = paymentRepo.findByOrderId(orderId).orElse(new Payment());
@@ -196,18 +160,13 @@ public class OrderFlowService {
         p.setItemCount(items.size());
         double gross = items.stream().mapToDouble(i -> i.getUnitPrice() * i.getQuantity()).sum();
         p.setGrossAmount(gross);
-        p.setNetAmount(gross); // sin descuentos/impuestos en este flujo
+        p.setNetAmount(gross);
         p.setMethod(data.getMethod());
         p.setPaidAt(data.getPaidAt() == null ? Instant.now() : data.getPaidAt());
         p.setNotes(data.getNotes());
         return paymentRepo.save(p);
     }
 
-    /**
-     * Elimina una orden y todas sus entidades relacionadas.
-     * Orden de borrado: items → warehouse → packaging → delivery → payment → order.
-     * Idempotente a nivel de API si se invoca sobre una orden inexistente.
-     */
     @Transactional
     public void deleteOrderCascade(Long orderId) {
         orderItemRepo.deleteByOrderId(orderId);

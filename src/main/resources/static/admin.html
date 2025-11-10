@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel Administrador Completo</title>
+    <title>Panel Administrador</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="css/admin.css">
 </head>
@@ -33,24 +33,13 @@
         <h2>Resumen</h2>
         <div class="admin-summary-grid">
             <div class="admin-summary-card">
-                <strong>Usuarios</strong>
-                <p id="dashUsers" class="status-line">—</p>
+                <strong>Usuarios</strong><p id="dashUsers" class="status-line">—</p>
             </div>
             <div class="admin-summary-card">
-                <strong>Órdenes (Usuario actual)</strong>
-                <p id="dashOrders" class="status-line">—</p>
+                <strong>Órdenes (Usuario actual)</strong><p id="dashOrders" class="status-line">—</p>
             </div>
             <div class="admin-summary-card">
-                <strong>P-S Pendientes (Global)</strong>
-                <p id="dashPsPending" class="status-line">—</p>
-            </div>
-            <div class="admin-summary-card">
-                <strong>Timeout Sesión (s)</strong>
-                <p id="dashTimeout" class="status-line">—</p>
-            </div>
-            <div class="admin-summary-card">
-                <strong><a href="all-orders.html">Administrar todas las ordenes</a></strong>
-                <p  class="status-line">—</p>
+                <strong>Timeout Sesión (s)</strong><p id="dashTimeout" class="status-line">—</p>
             </div>
         </div>
     </section>
@@ -64,35 +53,164 @@
             </label>
             <button class="btn primary" type="submit">Actualizar</button>
         </form>
-        <p class="status-line">Establece, por ejemplo, 180 para 3 minutos.</p>
+        <p class="status-line">Ej: 180 = 3 minutos.</p>
     </section>
 
     <!-- Usuarios -->
     <section class="panel">
         <h2>Usuarios</h2>
         <form id="userFilterForm" class="inline-form admin-form">
-            ...
+            <label class="form-field">Buscar
+                <input id="userQ" placeholder="usuario">
+            </label>
+            <label class="form-field">Rol
+                <select id="userRole">
+                    <option value="">(Todos)</option>
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="USER">USER</option>
+                </select>
+            </label>
+            <button class="btn outline" type="submit">Filtrar</button>
+            <button class="btn small danger outline" type="button" id="userClear">Limpiar</button>
+            <button class="btn accent" type="button" data-modal-open="modalUserNew">Nuevo Usuario</button>
         </form>
-
-        <button id="reloadUsersBtn" class="btn primary">Recargar usuarios</button>
-
         <table class="table">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Usuario</th>
-                <th>Rol</th>
-                <th>Activo</th>
-                <th>Acciones</th>
-            </tr>
-            </thead>
-            <tbody id="usersBody"></tbody>
+            <thead><tr><th>ID</th><th>Usuario</th><th>Rol</th><th>Activo</th><th>Acciones</th></tr></thead>
+            <tbody id="userBody"></tbody>
         </table>
     </section>
 
-    <!-- CRUD Productos -->
+    <!-- Órdenes Globales -->
     <section class="panel">
-        <h2>CRUD Productos Internos (Opcional)</h2>
+        <h2>Órdenes Globales</h2>
+        <form id="orderFilterForm" class="inline-form admin-form">
+            <label class="form-field">Usuario ID
+                <input id="ofUserId" type="number" min="1">
+            </label>
+            <label class="form-field">Estado
+                <input id="ofStatus" placeholder="CREATED">
+            </label>
+            <label class="form-field">Desde
+                <input type="datetime-local" id="ofFrom">
+            </label>
+            <label class="form-field">Hasta
+                <input type="datetime-local" id="ofTo">
+            </label>
+            <button class="btn outline" type="submit">Filtrar</button>
+            <button class="btn small danger outline" type="button" id="ofClear">Limpiar</button>
+        </form>
+        <table class="table">
+            <thead><tr><th>ID</th><th>UserId</th><th>Estado</th><th>Creada</th><th>Acciones</th></tr></thead>
+            <tbody id="ordersGlobalBody"></tbody>
+        </table>
+    </section>
+
+    <!-- Detalle / Gestión de una Orden -->
+    <section class="panel">
+        <h2>Detalle de Orden Seleccionada</h2>
+        <div id="selectedOrderInfo" class="status-line">Selecciona una orden en la tabla para ver detalle.</div>
+        <div id="orderDetailWrapper" class="grid" style="display:none; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem;"></div>
+
+        <div id="orderItemsWrapper" class="panel nested" style="display:none;">
+            <h3>Items</h3>
+            <table class="table">
+                <thead><tr><th>ID</th><th>ProdID</th><th>Categoría</th><th>Cant</th><th>Precio</th></tr></thead>
+                <tbody id="orderItemsBody"></tbody>
+            </table>
+        </div>
+
+        <div id="orderStagesWrapper" style="display:none;">
+            <h3>Etapas</h3>
+            <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;">
+                <!-- Warehouse -->
+                <div class="generic-card">
+                    <h4>Warehouse</h4>
+                    <div id="warehouseView" class="small-text">—</div>
+                    <form id="warehouseForm" class="form-rows">
+                        <label>In Date<input type="datetime-local" name="inDate"></label>
+                        <label>Out Date<input type="datetime-local" name="outDate"></label>
+                        <label>Stock Checked<select name="stockChecked"><option value="true">true</option><option value="false">false</option></select></label>
+                        <label>Stock Qty<input type="number" name="stockQty" min="0"></label>
+                        <label>Location<input name="location"></label>
+                        <label>Origin Country<input name="originCountry"></label>
+                        <label>Notes<input name="notes"></label>
+                        <button class="btn small success" type="submit">Guardar Warehouse</button>
+                    </form>
+                </div>
+                <!-- Packaging -->
+                <div class="generic-card">
+                    <h4>Packaging</h4>
+                    <div id="packagingView" class="small-text">—</div>
+                    <form id="packagingForm" class="form-rows">
+                        <label>Size<select name="size"><option value="">(none)</option><option value="GRANDE">GRANDE</option><option value="MEDIANO">MEDIANO</option><option value="PEQUEÑO">PEQUEÑO</option></select></label>
+                        <label>Type<select name="type"><option value="">(none)</option><option value="LIBRE">LIBRE</option><option value="AL_VACIO">AL_VACIO</option><option value="RELLENO">RELLENO</option></select></label>
+                        <label>Materials<input name="materials"></label>
+                        <label>Fragile<select name="fragile"><option value="true">true</option><option value="false">false</option></select></label>
+                        <label>Notes<input name="notes"></label>
+                        <button class="btn small success" type="submit">Guardar Packaging</button>
+                    </form>
+                </div>
+                <!-- Delivery -->
+                <div class="generic-card">
+                    <h4>Delivery</h4>
+                    <div id="deliveryView" class="small-text">—</div>
+                    <form id="deliveryForm" class="form-rows">
+                        <label>Método<select name="method"><option value="">(none)</option><option value="CORREO">CORREO</option><option value="MENSAJERO">MENSAJERO</option><option value="CASILLERO">CASILLERO</option></select></label>
+                        <label>Address<input name="address"></label>
+                        <label>Scheduled<input type="datetime-local" name="scheduledDate"></label>
+                        <label>Tracking<input name="trackingCode"></label>
+                        <label>Notes<input name="notes"></label>
+                        <button class="btn small success" type="submit">Guardar Delivery</button>
+                    </form>
+                </div>
+                <!-- Payment -->
+                <div class="generic-card">
+                    <h4>Payment</h4>
+                    <div id="paymentView" class="small-text">—</div>
+                    <form id="paymentForm" class="form-rows">
+                        <label>Currency<input name="currency" placeholder="USD"></label>
+                        <label>Method<input name="method" placeholder="TARJETA"></label>
+                        <label>Paid At<input type="datetime-local" name="paidAt"></label>
+                        <label>Notes<input name="notes"></label>
+                        <button class="btn small success" type="submit">Guardar Payment</button>
+                    </form>
+                </div>
+            </div>
+            <div style="margin-top:1rem;">
+                <button id="deleteOrderBtn" class="btn small danger outline">Eliminar Orden</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reglas Pokémon -->
+    <section class="panel">
+        <h2>Reglas Pokémon</h2>
+        <form id="rulesForm" class="inline-form admin-form">
+            <label class="form-field">Pokémon ID
+                <input id="rulePokemonId" type="number" min="1" required>
+            </label>
+            <label class="form-field">Origen
+                <input id="ruleOrigin">
+            </label>
+            <label class="form-field">Disponibles (CSV)
+                <input id="ruleAvail" placeholder="AR,US">
+            </label>
+            <label class="form-field">Prohibidos (CSV)
+                <input id="ruleBanned" placeholder="CN,JP">
+            </label>
+            <label class="form-field">Notas
+                <input id="ruleNotes">
+            </label>
+            <button class="btn success" type="submit">Guardar / Actualizar</button>
+            <button type="button" class="btn outline" id="ruleLoadBtn">Cargar</button>
+            <button type="button" class="btn danger outline" id="ruleDeleteBtn">Eliminar</button>
+        </form>
+        <div id="ruleStatus" class="status-line"></div>
+    </section>
+
+    <!-- CRUD Productos Internos -->
+    <section class="panel">
+        <h2>CRUD Productos Internos</h2>
         <form id="productForm" class="form-grid">
             <input type="hidden" id="prodId" name="id">
             <label class="form-field">Nombre
@@ -116,13 +234,13 @@
                 <textarea name="description" id="prodDesc" rows="2"></textarea>
             </label>
             <label class="form-field">País Origen
-                <input name="countryOfOrigin">
+                <select name="countryOfOrigin" id="prodCountry" required></select>
             </label>
             <label class="form-field">Países Disponibles (CSV)
-                <input name="availableCountriesCsv" placeholder="US,CA,MX">
+                <input name="availableCountriesCsv" placeholder="AR,CL">
             </label>
             <label class="form-field">Países Prohibidos (CSV)
-                <input name="bannedCountriesCsv" placeholder="CU,IR,...">
+                <input name="bannedCountriesCsv" placeholder="US,MX">
             </label>
             <div class="flex-row">
                 <button class="btn success" type="submit">Guardar</button>
@@ -131,9 +249,10 @@
         </form>
         <div id="adminProductsGrid" class="grid responsive"></div>
     </section>
+
 </main>
 
-<footer class="footer">Panel administrativo extendido</footer>
+<footer class="footer">Panel administrativo</footer>
 <div id="toastContainer" class="toast-container"></div>
 
 <!-- Modal Nuevo Usuario -->
@@ -157,11 +276,9 @@
 
 <script type="module">
     import { initTheme } from './js/util.js';
-    import { initAdminPage } from './js/admin.js';
     import { hydrateSessionUI } from './js/session.js';
     import './js/modal.js';
     import './js/admin-extended.js';
-    initAdminPage();
     initTheme();
     hydrateSessionUI();
 </script>

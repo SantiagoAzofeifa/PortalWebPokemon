@@ -13,7 +13,6 @@ function initCatalogPage() {
     const typeSel = qs('#typeSelect');
     const typeField = qs('#typeField');
 
-    // Poblar tipos
     if (typeSel && !typeSel.children.length) {
         const opt0 = document.createElement('option'); opt0.value=''; opt0.textContent='(Todos)';
         typeSel.appendChild(opt0);
@@ -25,7 +24,6 @@ function initCatalogPage() {
 
     let page=0, size=12, query='', type='', category='ALL';
 
-    // Mostrar/ocultar selector de tipo según categoría
     catSel.onchange = ()=>{
         category = catSel.value;
         typeField.style.display = category==='POKEMON' ? '' : 'none';
@@ -48,7 +46,6 @@ function initCatalogPage() {
         grid.innerHTML = loaderHTML();
         try {
             const offset = page*size;
-            // Agregador
             const url = `/api/catalog/cards?limit=${size}&offset=${offset}` +
                 (query? `&query=${encodeURIComponent(query)}`:'') +
                 (category? `&category=${encodeURIComponent(category)}`:'') +
@@ -68,11 +65,14 @@ function initCatalogPage() {
         div.className='product-card';
         const img = c.image || 'https://placehold.co/300x160?text=' + encodeURIComponent(c.kind);
         const badges = (c.kind==='POKEMON' ? (c.types||[]) : [c.kind]).map(t=>`<span class="badge small">${escapeHTML(t)}</span>`).join(' ');
+        const origin = c.country ? `<span class="badge small accent">Origen: ${escapeHTML(c.country)}</span>` : '';
         div.innerHTML = `
       <img src="${img}" alt="${escapeHTML(c.name)}">
       <div class="body">
         <h3>${escapeHTML(cap(c.name))}</h3>
-        <div class="flex-row">${badges}</div>
+        <div class="flex-row" style="gap:.35rem; flex-wrap:wrap;">
+          ${badges} ${origin}
+        </div>
         <span class="price">${formatMoney(c.price)}</span>
         <div class="flex-row">
           <button class="btn small primary" data-name="${c.name}" data-kind="${c.kind}">Agregar</button>
@@ -88,7 +88,11 @@ function initCatalogPage() {
         try {
             await API.post('/api/cart/catalog', { category: kind, nameOrId: name, quantity: 1 });
             showToast(`${cap(name)} (${kind}) agregado al carrito`,'success');
-        } catch {}
+        } catch (err) {
+            // Muestra el mensaje de backend (por ejemplo, país no coincide)
+            const msg = err?.message || 'No se pudo agregar';
+            showToast(msg, 'error');
+        }
     }
 
     function loaderHTML(){ return `<div class="generic-card" style="padding:1rem;text-align:center">Cargando...</div>`; }

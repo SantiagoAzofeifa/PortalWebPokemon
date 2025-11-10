@@ -40,6 +40,10 @@ public class User {
     @Column(nullable = false)
     private boolean active = true;
 
+    /** Código de país ISO-2 del usuario (ej: CR, US, MX). */
+    @Column(name = "country_code", length = 2)
+    private String countryCode;
+
     /** Fecha y hora de creación del usuario (UTC). */
     @Column(nullable = false)
     private Instant createdAt = Instant.now();
