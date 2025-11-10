@@ -157,4 +157,4 @@ async function renewSessionManual() {
     }
 }
 
-export { hydrateSessionUI, renewSessionManual };
+export { hydrateSessionUI, renewSessionManual, applyRoleVisibility };

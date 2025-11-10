@@ -81,6 +81,8 @@ public class OrderFlowController {
         return ResponseEntity.ok(flow.viewOrder(orderId));
     }
 
+
+
     /**
      * Lista las órdenes del usuario autenticado.
      * GET /api/orders/mine
@@ -89,6 +91,16 @@ public class OrderFlowController {
     public ResponseEntity<?> mine(@RequestHeader("X-SESSION-TOKEN") String token){
         Long userId = requireUser(token);
         return ResponseEntity.ok(flow.listForUser(userId));
+    }
+
+    /**
+     * Lista las órdenes de todos los usuarios, funcion propia de admin.
+     * GET /api/orders/mine
+     */
+    @GetMapping("/all")
+    public ResponseEntity<?> all(@RequestHeader("X-SESSION-TOKEN") String token){
+        Long userId = requireUser(token);
+        return ResponseEntity.ok(flow.listForAllUsers());
     }
 
     /**

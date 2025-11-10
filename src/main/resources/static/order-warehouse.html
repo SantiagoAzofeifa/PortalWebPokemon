@@ -29,9 +29,13 @@
             <label class="form-field">OutDate
                 <input type="datetime-local" name="outDate">
             </label>
-            <label class="form-field">Stock Checked
-                <input type="checkbox" name="stockChecked">
-            </label>
+
+            <div class="form-field full-width">
+                <h3>Check stocks</h3>
+                <div id="productList"></div>
+            </div>
+            <br>
+
             <label class="form-field">Stock Qty
                 <input type="number" name="stockQty">
             </label>
@@ -56,6 +60,7 @@
     import { initTheme } from './js/util.js';
     import { hydrateSessionUI } from './js/session.js';
     import { initWarehousePage } from './js/orders.js';
+
     initTheme();
     hydrateSessionUI();
     initWarehousePage();

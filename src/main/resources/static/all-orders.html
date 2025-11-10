@@ -25,8 +25,9 @@
 </header>
 
 <main class="content">
-    <section class="panel">
-        <div id="orderDetailContainer"></div>
+    <section class="panel" data-requires-role="ADMIN">
+        <h2>Todas las ordenes</h2>
+        <div id="ordersList" class="orders-list"></div>
     </section>
 </main>
 
@@ -36,9 +37,9 @@
 <script type="module">
     import { initTheme } from './js/util.js';
     import { hydrateSessionUI } from './js/session.js';
-    import { initOrderDetailPage } from './js/orders.js';
+    import { initAllOrderListPage } from './js/orders.js';
     initTheme();
-    initOrderDetailPage();
+    initAllOrderListPage();
     hydrateSessionUI();
 </script>
 </body>

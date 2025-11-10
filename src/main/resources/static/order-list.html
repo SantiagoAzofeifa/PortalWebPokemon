@@ -16,7 +16,6 @@
         <a href="index.html">Inicio</a>
         <a href="catalog.html">Catálogo</a>
         <a href="Cart.html">Carrito</a>
-        <a href="order-detail.html" class="active">Detalle</a>
         <a href="admin.html" data-requires-role="ADMIN">Admin</a>
         <span id="sessionCountdown" class="badge accent hidden" aria-live="polite">—</span>
         <button id="renewBtn" class="btn outline hidden" type="button">Renovar</button>
@@ -27,7 +26,8 @@
 
 <main class="content">
     <section class="panel">
-        <div id="orderDetailContainer"></div>
+        <h2>Mis órdenes</h2>
+        <div id="ordersList" class="orders-list"></div>
     </section>
 </main>
 
@@ -37,10 +37,10 @@
 <script type="module">
     import { initTheme } from './js/util.js';
     import { hydrateSessionUI } from './js/session.js';
-    import { initOrderDetailPage } from './js/orders.js';
+    import { initOrderListPage } from './js/orders.js';
     initTheme();
     hydrateSessionUI();
-    initOrderDetailPage();
+    initOrderListPage();
 </script>
 </body>
 </html>

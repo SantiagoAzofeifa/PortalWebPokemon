@@ -125,6 +125,14 @@ public class OrderFlowService {
     }
 
     /**
+     * Lista órdenes para todos los usuarios.
+     */
+    @Transactional(readOnly = true)
+    public List<Order> listForAllUsers() {
+        return orderRepo.findAll();
+    }
+
+    /**
      * Crea o actualiza Warehouse asociado a la orden.
      * Si no existe, crea con orderId; si existe, actualiza campos.
      * inDate por defecto a ahora si no viene informado.
