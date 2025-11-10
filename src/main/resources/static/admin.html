@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Panel Administrador Completo</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/admin.css">
 </head>
 <body class="theme-light">
 <header class="app-header">
@@ -67,25 +67,22 @@
     <section class="panel">
         <h2>Usuarios</h2>
         <form id="userFilterForm" class="inline-form admin-form">
-            <label class="form-field">Buscar
-                <input id="userQ" placeholder="usuario">
-            </label>
-            <label class="form-field">Rol
-                <select id="userRole">
-                    <option value="">(Todos)</option>
-                    <option value="ADMIN">ADMIN</option>
-                    <option value="USER">USER</option>
-                </select>
-            </label>
-            <button class="btn outline" type="submit">Filtrar</button>
-            <button class="btn small danger outline" type="button" id="userClear">Limpiar</button>
-            <button class="btn accent" type="button" data-modal-open="modalUserNew">Nuevo Usuario</button>
+            ...
         </form>
+
+        <button id="reloadUsersBtn" class="btn primary">Recargar usuarios</button>
+
         <table class="table">
             <thead>
-            <tr><th>ID</th><th>Usuario</th><th>Rol</th><th>Activo</th><th>Acciones</th></tr>
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Rol</th>
+                <th>Activo</th>
+                <th>Acciones</th>
+            </tr>
             </thead>
-            <tbody id="userBody"></tbody>
+            <tbody id="usersBody"></tbody>
         </table>
     </section>
 
@@ -156,9 +153,11 @@
 
 <script type="module">
     import { initTheme } from './js/util.js';
+    import { initAdminPage } from './js/admin.js';
     import { hydrateSessionUI } from './js/session.js';
     import './js/modal.js';
     import './js/admin-extended.js';
+    initAdminPage();
     initTheme();
     hydrateSessionUI();
 </script>

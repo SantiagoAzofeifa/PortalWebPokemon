@@ -3,6 +3,7 @@ package cr.ac.una.portalwebpokeapi.controller;
 import cr.ac.una.portalwebpokeapi.config.SessionManager;
 import cr.ac.una.portalwebpokeapi.model.PokemonRule;
 import cr.ac.una.portalwebpokeapi.repository.PokemonRuleRepository;
+import cr.ac.una.portalwebpokeapi.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +21,10 @@ public class AdminRulesController {
 
     private final PokemonRuleRepository repo;  // Acceso a persistencia de reglas
     private final SessionManager sessions;     // Gestión de sesión y rol
+    private final UserRepository users;
 
-    public AdminRulesController(PokemonRuleRepository repo, SessionManager sessions) {
+    public AdminRulesController(PokemonRuleRepository repo, SessionManager sessions,  UserRepository users) {
+        this.users = users;
         this.repo = repo;
         this.sessions = sessions;
     }
@@ -100,5 +103,16 @@ public class AdminRulesController {
         requireAdmin(token);
         repo.findByPokemonId(pokemonId).ifPresent(repo::delete);
         return ResponseEntity.ok(Map.of("ok", true));
+    }
+    @GetMapping("/users")
+    public ResponseEntity<?> getUsers(@RequestHeader("X-SESSION-TOKEN") String token){
+        requireAdmin(token);
+        return ResponseEntity.ok(users.findAll());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        users.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

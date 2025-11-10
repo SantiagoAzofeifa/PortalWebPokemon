@@ -1,0 +1,232 @@
+/* ============================================================
+   POKESTORE UNA — HOME (INICIO)
+   ============================================================ */
+
+/* === RESET Y BASE === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+html, body {
+    height: 100%;
+    background: #0f1115;
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.app-header {
+    background: #111827;
+    border-bottom: 1px solid #1f2937;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+}
+
+.logo-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.8rem;
+}
+
+.logo-bar h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #facc15;
+}
+
+.site-logo {
+    height: 45px;
+    width: auto;
+}
+
+/* Navegación */
+.main-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #1e293b;
+    border-top: 1px solid #374151;
+    padding: 0.6rem 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: #e2e8f0;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.main-nav a:hover {
+    background-color: #f87171;
+    color: #fff;
+}
+
+.main-nav a.active {
+    background-color: #facc15;
+    color: #111827;
+}
+
+/* ============================================================
+   CONTENIDO PRINCIPAL
+   ============================================================ */
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 1rem 3rem;
+}
+
+/* Panel general */
+.panel {
+    background: linear-gradient(180deg, #1e293b 0%, #111827 100%);
+    border-radius: 15px;
+    padding: 2rem 2.5rem;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(250, 204, 21, 0.25);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.panel:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(250, 204, 21, 0.1);
+}
+
+.panel h2 {
+    color: #facc15;
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.panel p, .panel li {
+    color: #cbd5e1;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+.panel ul {
+    list-style: none;
+    padding: 0;
+}
+
+.panel li {
+    background: rgba(30, 41, 59, 0.5);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: background 0.3s ease;
+}
+
+.panel li:hover {
+    background: rgba(250, 204, 21, 0.1);
+}
+
+/* ============================================================
+   SECCIÓN DE SESIÓN
+   ============================================================ */
+.session-status {
+    background: #1f2937;
+    border: 1px solid rgba(250, 204, 21, 0.25);
+    border-radius: 10px;
+    padding: 0.8rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+    font-weight: 600;
+    color: #facc15;
+}
+
+.session-status span {
+    color: #f87171;
+    font-weight: 700;
+}
+
+/* ============================================================
+   BOTONES PRINCIPALES
+   ============================================================ */
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.btn {
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 0.8rem 2rem;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn.primary {
+    background: linear-gradient(90deg, #facc15 0%, #fbbf24 100%);
+    color: #111827;
+}
+
+.btn.primary:hover {
+    background: linear-gradient(90deg, #f87171 0%, #dc2626 100%);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn.outline {
+    background: transparent;
+    color: #facc15;
+    border: 1px solid #facc15;
+}
+
+.btn.outline:hover {
+    background: #facc15;
+    color: #111827;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+    background: #111827;
+    color: #facc15;
+    text-align: center;
+    padding: 1rem;
+    border-top: 2px solid #facc15;
+    margin-top: auto;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 700px) {
+    .panel {
+        padding: 1.5rem;
+    }
+
+    .actions {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}

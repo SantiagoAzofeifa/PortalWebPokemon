@@ -1,0 +1,361 @@
+/* ============================================================
+   POKESTORE UNA — LOGIN / REGISTRO (AUTH)
+   ============================================================ */
+
+/* === RESET Y BASE === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+html, body {
+    height: 100%;
+    background: #0f1115;
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.app-header {
+    background: #111827;
+    border-bottom: 1px solid #1f2937;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+}
+
+.logo-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.8rem;
+}
+
+.logo-bar h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #facc15;
+}
+
+.site-logo {
+    height: 45px;
+    width: auto;
+}
+
+/* Navegación */
+.main-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #1e293b;
+    border-top: 1px solid #374151;
+    padding: 0.6rem 1rem;
+    gap: 1rem;
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: #e2e8f0;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.main-nav a:hover {
+    background-color: #f87171;
+    color: #fff;
+}
+
+.main-nav a.active {
+    background-color: #facc15;
+    color: #111827;
+}
+
+/* ============================================================
+   CONTENIDO PRINCIPAL
+   ============================================================ */
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 3rem;
+}
+
+/* Panel contenedor de login/registro */
+.panel {
+    background: linear-gradient(180deg, #1e293b 0%, #111827 100%);
+    border-radius: 15px;
+    padding: 1.8rem 2rem;
+    width: 100%;
+    max-width: 520px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(250, 204, 21, 0.25);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.panel:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(250, 204, 21, 0.1);
+}
+
+.panel h2 {
+    color: #facc15;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 1.2rem;
+}
+
+/* ============================================================
+   FORMULARIOS
+   ============================================================ */
+.form-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.form-row label {
+    font-weight: 600;
+    color: #facc15;
+    font-size: 0.95rem;
+}
+
+input, select {
+    background: #111827;
+    color: #e2e8f0;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, select:focus {
+    border-color: #facc15;
+    box-shadow: 0 0 5px rgba(250, 204, 21, 0.3);
+}
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+.btn {
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 0.6rem 1.2rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.btn.primary {
+    background: linear-gradient(90deg, #facc15 0%, #fbbf24 100%);
+    color: #111827;
+}
+
+.btn.primary:hover {
+    background: linear-gradient(90deg, #f87171 0%, #dc2626 100%);
+    color: white;
+}
+
+.btn.success {
+    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+    color: #fff;
+}
+
+.btn.success:hover {
+    background: linear-gradient(90deg, #059669 0%, #047857 100%);
+}
+
+.btn.outline {
+    background: transparent;
+    color: #e2e8f0;
+    border: 1px solid #facc15;
+}
+
+.btn.outline:hover {
+    background: #facc15;
+    color: #111827;
+}
+
+/* Acciones */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+/* ============================================================
+   BLOQUES SECUNDARIOS
+   ============================================================ */
+.session-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.2rem;
+}
+
+.code-block {
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    margin-top: 1rem;
+    font-family: 'Consolas', monospace;
+    color: #f87171;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+    background: #111827;
+    color: #facc15;
+    text-align: center;
+    padding: 1rem;
+    border-top: 2px solid #facc15;
+    margin-top: auto;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+/* ============================================================
+   MENSAJE DE SESIÓN (AUTH OUTPUT)
+   ============================================================ */
+
+/* Contenedor del mensaje (usa <pre id="authOutput">) */
+#authOutput {
+    background: linear-gradient(135deg, #111827 0%, #0f172a 100%);
+    border: 1px solid rgba(16, 185, 129, 0.4); /* verde esmeralda */
+    border-left: 5px solid #10b981; /* acento verde */
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    font-family: 'Consolas', monospace;
+    color: #a7f3d0;
+    white-space: pre-wrap;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Clase activa cuando se muestra */
+#authOutput.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Variantes para tipos de mensaje */
+#authOutput.success {
+    border-left-color: #10b981;
+    color: #a7f3d0;
+}
+
+#authOutput.error {
+    border-left-color: #ef4444;
+    color: #fecaca;
+}
+
+#authOutput.info {
+    border-left-color: #facc15;
+    color: #fde68a;
+}
+
+/* Animación de aparición */
+@keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ============================================================
+   POKESTORE UNA — SISTEMA DE NOTIFICACIONES (TOAST)
+   ============================================================ */
+
+/* Contenedor general */
+.toast-container {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+/* Notificación individual */
+.toast {
+    min-width: 240px;
+    max-width: 360px;
+    background: linear-gradient(135deg, #1e293b 0%, #111827 100%);
+    color: #e2e8f0;
+    border-radius: 10px;
+    padding: 0.9rem 1.2rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-left: 5px solid #facc15;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: toastSlideIn 0.4s ease forwards;
+    pointer-events: all;
+}
+
+/* Tipos de toast */
+.toast.success { border-left-color: #10b981; color: #bbf7d0; }
+.toast.error { border-left-color: #ef4444; color: #fecaca; }
+.toast.info { border-left-color: #facc15; color: #fde68a; }
+
+/* Animaciones */
+@keyframes toastSlideIn {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastFadeOut {
+    0% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-10px); }
+}
+
+/* Ocultar con animación */
+.toast.hide {
+    animation: toastFadeOut 0.4s ease forwards;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 600px) {
+    .panel {
+        padding: 1.3rem 1rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+}

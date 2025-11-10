@@ -21,6 +21,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     Optional<User> findByUsername(String username);
 
+
+
     /**
      * Verifica si ya existe un usuario con el nombre de usuario especificado.
      *
@@ -28,4 +30,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return true si existe, false en caso contrario.
      */
     boolean existsByUsername(String username);
+
+    void deleteById(Long id);
 }
