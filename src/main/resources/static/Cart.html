@@ -55,12 +55,29 @@
 <div id="toastContainer" class="toast-container"></div>
 
 <script type="module">
-    import { initTheme } from './js/util.js';
+    import { initTheme, showToast } from './js/util.js';
     import { hydrateSessionUI } from './js/session.js';
     import { initCartPage } from './js/cart.js';
+
     initTheme();
     hydrateSessionUI();
     initCartPage();
+
+    // --- Validación de carrito vacío ---
+    const clearBtn = document.getElementById("clearCartBtn");
+
+    // ---------------------------------------------------
+    clearBtn.addEventListener("click", (e) => {
+        const cartBody = document.getElementById("cartBody");
+        const hasItems = cartBody && cartBody.children.length > 0;
+
+        if (!hasItems) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            showToast("No se puede vaciar el carrito porque no tiene productos.", "error");
+        }
+    }, { capture: true });
+    // 🟡 --- Fin de validación ---
 </script>
 </body>
 </html>

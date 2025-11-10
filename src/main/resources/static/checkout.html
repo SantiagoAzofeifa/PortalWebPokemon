@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="css/checkout.css">
 </head>
-<body class="theme-light">
+<body>
 <header class="app-header">
     <div class="logo-bar">
         <h1>Procesar Compra</h1>
@@ -29,13 +29,17 @@
         <h2>Datos del Cliente</h2>
         <form id="checkoutForm" class="form-grid" autocomplete="off">
             <label class="form-field">Nombre
-                <input name="customerName" required>
+                <input id="customerName" name="customerName" required
+                       pattern="[A-Za-zÀ-ÿ\s]+" title="Solo letras y espacios permitidos">
+                <span class="error-message" id="nameError">Solo se permiten letras y espacios.</span>
             </label>
             <label class="form-field">Email
                 <input type="email" name="customerEmail" required>
             </label>
             <label class="form-field">Teléfono
-                <input name="customerPhone">
+                <input id="customerPhone" name="customerPhone" required
+                       pattern="[0-9]{8,}" title="Solo números (mínimo 8 dígitos)">
+                <span class="error-message" id="phoneError">Solo se permiten números (mínimo 8 dígitos).</span>
             </label>
             <label class="form-field">Dirección 1
                 <input name="addressLine1" required>
@@ -66,6 +70,41 @@
     initTheme();
     hydrateSessionUI();
 
+    const nameInput = document.getElementById("customerName");
+    const phoneInput = document.getElementById("customerPhone");
+    const nameError = document.getElementById("nameError");
+    const phoneError = document.getElementById("phoneError");
+
+    // 🔹 Solo letras y espacios
+    nameInput.addEventListener("input", function () {
+        const original = this.value;
+        const cleaned = original.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
+
+        // Si quitó caracteres inválidos, mostrar el error
+        if (original !== cleaned) {
+            nameError.style.display = "block";
+            this.classList.add("invalid");
+        } else {
+            nameError.style.display = "none";
+            this.classList.remove("invalid");
+        }
+
+        this.value = cleaned;
+    });
+
+    // 🔹 Solo números
+    phoneInput.addEventListener("input", function () {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (!/^[0-9]{8,}$/.test(this.value) && this.value !== "") {
+            phoneError.style.display = "block";
+            this.classList.add("invalid");
+        } else {
+            phoneError.style.display = "none";
+            this.classList.remove("invalid");
+        }
+    });
+
+    // 🔹 Validación de sesión y envío del pedido
     if (!requireAuthOnLoad()) {
         // redirige a login
     } else {
@@ -95,7 +134,9 @@
                 const r = await API.post('/api/orders/checkout', body);
                 showToast('Pedido creado', 'success');
                 setTimeout(() => (location.href = `order-detail.html?orderId=${r.orderId}`), 600);
-            } catch {}
+            } catch {
+                showToast('Error al crear el pedido.', 'error');
+            }
         };
     }
 </script>
