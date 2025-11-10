@@ -819,3 +819,14 @@ main.content.narrow {
     object-fit: contain;
     display: inline-block;
 }
+/* Estilos para los mensajes de error */
+ .error-message {
+     color: #ff6b6b;
+     font-size: 0.9em;
+     margin-top: 3px;
+     display: none;
+ }
+input.invalid {
+    border: 1px solid #ff6b6b;
+    background-color: #2b1b1b;
+}
